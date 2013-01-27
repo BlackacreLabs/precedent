@@ -1,0 +1,35 @@
+require File.dirname(__FILE__) + '/inline'
+
+module Precedent
+  grammar Paragraph
+    include Inline
+
+    rule paragraph
+      indented / flush / quote / indented_quote
+    end
+
+    rule indented
+      '  ' content:inline {
+        def build ; { :type => :indented, :content => content.build } ; end
+      }
+    end
+
+    rule flush
+      !' ' content:inline {
+        def build ; { :type => :flush, :content => content.build } ; end
+      }
+    end
+    
+    rule quote
+      '    ' content:inline {
+        def build ; { :type => :quote, :content => content.build } ; end
+      }
+    end
+    
+    rule indented_quote
+      '      ' content:inline {
+        def build ; { :type => :indented_quote, :content => content.build } ; end
+      }
+    end
+  end
+end

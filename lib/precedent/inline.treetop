@@ -1,0 +1,19 @@
+module Precedent
+  grammar Inline
+    rule inline
+      (word / space)+ {
+        def build
+          elements.map(&:build).join
+        end
+      }
+    end
+
+    rule word
+      [a-zA-Z\.]+ { def build ; text_value ; end }
+    end
+
+    rule space
+      ' '+ { def build ; ' ' ; end }
+    end
+  end
+end

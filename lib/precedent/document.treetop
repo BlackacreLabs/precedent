@@ -1,0 +1,27 @@
+require File.dirname(__FILE__) + '/paragraph'
+
+module Precedent
+  grammar Document
+    include Paragraph
+
+    rule root
+      block+
+    end
+
+    rule block
+      content:paragraph block_end
+    end
+
+    rule block_end
+      blank_lines / eof
+    end
+
+    rule blank_lines
+      ' '* "\n"+
+    end
+
+    rule eof
+      !.
+    end
+  end
+end
