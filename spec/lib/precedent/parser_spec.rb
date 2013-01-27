@@ -34,5 +34,14 @@ describe Precedent do
         :type => :indented, :content => "#{first} #{second}"
       }]
     end
+
+    it "recognizes headings" do
+      hashes = '#' * (1 + rand(3))
+      Precedent.parse("#{hashes} #{first}").should == [{
+        :type => :heading,
+        :level => hashes.length,
+        :content => first
+      }]
+    end
   end
 end

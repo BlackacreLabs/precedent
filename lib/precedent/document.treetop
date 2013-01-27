@@ -9,7 +9,20 @@ module Precedent
     end
 
     rule block
-      content:paragraph block_end
+      content:(paragraph / heading) block_end
+    end
+
+    rule heading
+      hashes:'#'+ ' '+ content:inline
+      {
+        def build
+          {
+            :type => :heading,
+            :level => hashes.text_value.length,
+            :content => content.build
+          }
+        end
+      }
     end
 
     rule block_end
