@@ -28,5 +28,11 @@ describe Precedent do
         { :type => :quote, :content => second }
       ]
     }
+
+    it "combines paragraph lines" do
+      Precedent.parse("  #{first}\n#{second}").should == [{
+        :type => :indented, :content => "#{first} #{second}"
+      }]
+    end
   end
 end

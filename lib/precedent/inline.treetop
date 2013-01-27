@@ -1,11 +1,17 @@
 module Precedent
   grammar Inline
     rule inline
-      (word / space)+ {
+      (word / space)
+      (single_newline? ( word / space))*
+      {
         def build
           elements.map(&:build).join
         end
       }
+    end
+
+    rule single_newline
+      "\n" { def build ; ' ' ; end }
     end
 
     rule word
@@ -13,7 +19,7 @@ module Precedent
     end
 
     rule space
-      ' '+ { def build ; ' ' ; end }
+      ' ' { def build ; ' ' ; end }
     end
   end
 end
