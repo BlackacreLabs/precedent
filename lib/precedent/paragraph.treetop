@@ -5,7 +5,7 @@ module Precedent
     include Inline
 
     rule paragraph
-      indented / flush / quote / indented_quote
+      indented_quote / quote / indented / flush
     end
 
     rule indented

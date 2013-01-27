@@ -5,18 +5,27 @@ include Precedent
 
 describe Precedent do
   context 'block elements' do
-    specify {
-      first = Faker::Lorem.sentence
-      second = Faker::Lorem.sentence
-      input = <<-eos
-  #{first}
+    let(:first) { Faker::Lorem.sentence }
+    let(:second) { Faker::Lorem.sentence }
 
-#{second}
-      eos
-      result = Precedent.parse(input)
-      result.should == [
+    specify {
+      Precedent.parse("  #{first}\n\n#{second}").should == [
         { :type => :indented, :content => first },
         { :type => :flush, :content => second }
+      ]
+    }
+
+    specify { 
+      Precedent.parse("  #{first}\n\n      #{second}").should == [
+        { :type => :indented, :content => first },
+        { :type => :indented_quote, :content => second }
+      ]
+    }
+
+    specify { 
+      Precedent.parse("  #{first}\n\n    #{second}").should == [
+        { :type => :indented, :content => first },
+        { :type => :quote, :content => second }
       ]
     }
   end
