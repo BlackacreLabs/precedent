@@ -178,5 +178,17 @@ describe Precedent do
         }
       ]
     end
+
+    it 'parses emphasis' do
+      Precedent.parse("  #{first} //#{second}// #{third}").should == [
+        { :type => :indented,
+          :content => [
+            first + ' ',
+            { :type => :emphasis, :content => second },
+            ' ' + third
+          ]
+        }
+      ]
+    end
   end
 end

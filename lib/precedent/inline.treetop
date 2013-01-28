@@ -1,8 +1,8 @@
 module Precedent
   grammar Inline
     rule inline
-      first:(word / space / smallcaps)
-      subsequent:(single_newline? (smallcaps / word / space))*
+      first:(word / space / emphasis / smallcaps)
+      subsequent:(single_newline? (word / space / emphasis / smallcaps))*
       {
         def build
           ret = subsequent.elements.map(&:build).flatten.reduce([first.build]) do |mem, e|
@@ -25,6 +25,15 @@ module Precedent
       {
         def build
           { :type => :smallcaps, :content => content.build }
+        end
+      }
+    end
+
+    rule emphasis
+      '//' content:inline '//'
+      {
+        def build
+          { :type => :emphasis, :content => content.build }
         end
       }
     end
