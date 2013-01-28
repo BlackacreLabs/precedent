@@ -13,6 +13,8 @@ module Precedent
     end
 
     rule block
+      # Note the use of the content label in reliance upon the generic
+      # #build() implementation in node_patch.rb.
       content:(comment / meta / paragraph / heading) block_end
     end
 
@@ -24,7 +26,8 @@ module Precedent
       "%" content:[^\n]+
       {
         def build
-          { :type => :comment, :content => content.text_value }
+          { :type => :comment,
+            :content => content.text_value }
         end
       }
     end

@@ -2,8 +2,14 @@ require_relative 'parse'
 require 'active_support/core_ext/hash/slice'
 
 module Precedent
-  # convert a list of block-level element hashes into a hash
-  # representing the structure of the document as a whole
+  public
+
+  # Convert a list of block-level element hashes into a hash
+  # representing the structure of the document as a whole.
+  #
+  # This format is more useful for certain output formatters, especially
+  # those that need to generate footnotes inline (e.g. LaTeX) rather
+  # than at the end of output (e.g. HTML).
   def self.load(source)
     blank = { :meta => {}, :content => [], :footnotes => {} }
     inject_footnotes(parse(source).reduce(blank) do |mem, e|
@@ -20,7 +26,8 @@ module Precedent
   end
 
   private
-  # replace reference hashes in ast[:content] with footnotes containing
+
+  # Replace reference hashes in ast[:content] with footnotes containing
   # the content in ast[:footnotes] for the corresponding marker
   def self.inject_footnotes(ast)
     footnotes = ast[:footnotes]
@@ -42,7 +49,7 @@ module Precedent
     when Array
       content.map {|c| replace_references(c, footnotes) }
     when Hash
-      # REPLACEMENT
+      # Replacement happens here
       if content[:type] == :reference
         marker = content[:marker]
         { 

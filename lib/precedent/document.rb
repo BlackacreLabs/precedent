@@ -153,7 +153,8 @@ module Precedent
 
     module Comment1
       def build
-        { :type => :comment, :content => content.text_value }
+        { :type => :comment,
+          :content => content.text_value }
       end
     end
 

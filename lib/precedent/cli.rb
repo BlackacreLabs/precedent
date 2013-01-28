@@ -1,12 +1,13 @@
 require 'thor'
 
 module Precedent
+  # Command Line Interface
   class CLI < Thor
     option :file,
       :aliases => '-f',
       :type => :string,
-      :desc => 'file to translate'
-    desc "html", "translate Precedent markup into HTML5"
+      :desc => 'File to translate'
+    desc "html", "Translate Precedent markup into HTML5"
     def html()
       if options[:file]
         input = open(options[:file], 'r').read

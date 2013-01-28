@@ -6,6 +6,9 @@ module Precedent
     include Inline
 
     rule paragraph
+      # Note that paragraph types with longer initial indentation (e.g.
+      # quote paragraphs) _must_ precede those with shorter indentation
+      # (e.g. indented body pagaraphs) in this list.
       horizontal_rule /
       ragged_left /
       quote /

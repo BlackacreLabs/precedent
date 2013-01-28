@@ -1,4 +1,5 @@
 module Precedent
+  # YAML-esque (but non-nestable) metadata
   grammar Meta
     rule meta
       first:property more:("\n" prop:property)*

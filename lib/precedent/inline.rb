@@ -29,16 +29,23 @@ module Precedent
     module Inline2
       def build
         elems = subsequent.elements.map(&:build).flatten
+        # Members of `subsequent` come in [nil, Node] lists when there
+        # is no preceding line break. The car values can't be ignored,
+        # as we need to convert newlines to spaces when they occur.
         ret = elems.reduce([first.build]) do |mem, e|
           last = mem.last
+          # Start the output list with the first element
           if e.nil?
             mem
+          # Concatenate contiguous strings
           elsif last.is_a?(String) && e.is_a?(String)
             mem + [mem.pop + e]
-          else
+          else # Hash
             mem + [e]
           end
         end
+        # If there is just one content element, give the element
+        # rather than a one-element list.
         ret.count == 1 ? ret.first : ret
       end
     end
@@ -166,7 +173,8 @@ module Precedent
 
     module Smallcaps1
       def build
-        { :type => :smallcaps, :content => content.build }
+        { :type => :smallcaps,
+          :content => content.build }
       end
     end
 
@@ -227,7 +235,8 @@ module Precedent
 
     module Emphasis1
       def build
-        { :type => :emphasis, :content => content.build }
+        { :type => :emphasis,
+          :content => content.build }
       end
     end
 
@@ -288,7 +297,8 @@ module Precedent
 
     module Citation1
       def build
-        { :type => :citation, :content => content.build }
+        { :type => :citation,
+          :content => content.build }
       end
     end
 
@@ -349,7 +359,8 @@ module Precedent
 
     module PageBreak1
       def build
-        { :type => :break, :page => page.text_value.to_i }
+        { :type => :break,
+          :page => page.text_value.to_i }
       end
     end
 
@@ -429,7 +440,8 @@ module Precedent
 
     module Reference1
       def build
-        { :type => :reference, :marker => marker.text_value }
+        { :type => :reference,
+          :marker => marker.text_value }
       end
     end
 

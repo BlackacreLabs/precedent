@@ -3,6 +3,7 @@
 
 
 module Precedent
+  # YAML-esque (but non-nestable) metadata
   module Meta
     include Treetop::Runtime
 
