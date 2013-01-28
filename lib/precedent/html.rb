@@ -36,7 +36,7 @@ p { text-indent: 3ex; }
 
     add_meta(metas, article)
     add_nodes(content, article)
-    add_footnotes(footnotes, article)
+    add_footnotes(footnotes, article) unless footnotes.empty?
     # format the root to avoid <?xml> in output
     "<!doctype html>\n#{xml.root.to_xml(indent: 2)}"
   end

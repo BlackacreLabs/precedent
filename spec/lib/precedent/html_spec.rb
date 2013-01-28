@@ -59,4 +59,10 @@ describe Precedent do
     result.should match /<aside.+id=\"footnote-#{marker}/
     result.should match /<sup><a.+class=\"back-reference/
   end
+
+  specify do
+    result = Precedent.to_html("#{first}")
+    puts result
+    result.should_not match /<section class=\"footnotes\"/
+  end
 end
