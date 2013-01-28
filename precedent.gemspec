@@ -18,6 +18,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_dependency "treetop"
+  gem.add_dependency "active_support"
 
   gem.add_development_dependency 'awesome_print'
   gem.add_development_dependency 'faker'
