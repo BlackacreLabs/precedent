@@ -5,12 +5,18 @@ module Precedent
     include Inline
 
     rule paragraph
-      horizontal_rule / quote / footnote / indented / flush
+      horizontal_rule / ragged_left / quote / footnote / indented / flush
     end
 
     rule horizontal_rule
       '* * *' "\n"
       { def build ; { :type => :rule } ; end }
+    end
+
+    rule ragged_left
+      '        ' content:inline {
+        def build ; { :type => :ragged_left, :content => content.build } ; end
+      }
     end
 
     rule indented

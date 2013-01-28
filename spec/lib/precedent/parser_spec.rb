@@ -31,6 +31,13 @@ describe Precedent do
     }
 
     specify { 
+      Precedent.parse("#{first}\n\n        #{second}").should == [
+        { :type => :flush, :content => first },
+        { :type => :ragged_left, :content => second }
+      ]
+    }
+
+    specify { 
       Precedent.parse("    #{first}\n\n      #{second}").should == [
         { :type => :quote,
           :content => [
