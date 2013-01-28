@@ -4,13 +4,13 @@ require 'ap'
 include Precedent
 
 describe Precedent do
-  context 'block elements' do
-    let(:first) { Faker::Lorem.sentence }
-    let(:second) { Faker::Lorem.sentence }
-    let(:third) { Faker::Lorem.sentence }
-    let(:word) { Faker::Lorem.word }
-    let(:another_word) { Faker::Lorem.word }
+  let(:first) { Faker::Lorem.sentence }
+  let(:second) { Faker::Lorem.sentence }
+  let(:third) { Faker::Lorem.sentence }
+  let(:word) { Faker::Lorem.word }
+  let(:another_word) { Faker::Lorem.word }
 
+  context 'block elements' do
     specify {
       Precedent.parse("  #{first}\n\n#{second}").should == [
         { :type => :indented, :content => first },
@@ -164,6 +164,19 @@ describe Precedent do
         ]
       end
     end
+  end
 
+  context 'inline elements' do
+    it 'parses smallcaps' do
+      Precedent.parse("  #{first} <<#{second}>> #{third}").should == [
+        { :type => :indented,
+          :content => [
+            first + ' ',
+            { :type => :smallcaps, :content => second },
+            ' ' + third
+          ]
+        }
+      ]
+    end
   end
 end

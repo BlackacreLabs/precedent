@@ -1,11 +1,30 @@
 module Precedent
   grammar Inline
     rule inline
-      (word / space)
-      (single_newline? ( word / space))*
+      first:(word / space / smallcaps)
+      subsequent:(single_newline? (smallcaps / word / space))*
       {
         def build
-          elements.map(&:build).join
+          ret = subsequent.elements.map(&:build).flatten.reduce([first.build]) do |mem, e|
+            last = mem.last
+            if e.nil?
+              mem
+            elsif last.is_a?(String) && e.is_a?(String)
+              mem + [mem.pop + e]
+            else
+              mem + [e]
+            end
+          end
+          ret.count == 1 ? ret.first : ret
+        end
+      }
+    end
+
+    rule smallcaps
+      '<<' content:inline '>>'
+      {
+        def build
+          { :type => :smallcaps, :content => content.build }
         end
       }
     end
@@ -15,7 +34,7 @@ module Precedent
     end
 
     rule word
-      [a-zA-Z\.]+ { def build ; text_value ; end }
+      [a-zA-Z.]+ { def build ; text_value ; end }
     end
 
     rule space
