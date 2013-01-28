@@ -38,4 +38,8 @@ task :clean do
   end
 end
 
+require 'rspec/core/rake_task'
+
+RSpec::Core::RakeTask.new(:spec)
+
 task :default => [:lines, :grammars, :spec]
