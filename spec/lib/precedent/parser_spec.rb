@@ -295,6 +295,22 @@ describe Precedent do
       end
     end
 
+    it 'parses inlines across line boundaries' do
+      Precedent.parse(
+        "#{first} <<#{word}\n#{another_word}>> #{second}"
+      ).should == [
+        { :type => :flush,
+          :content => [
+            first + ' ',
+            { :type => :smallcaps,
+              :content => "#{word} #{another_word}"
+            },
+            ' ' + second
+          ]
+        }
+      ]
+    end
+
     context 'inlines within inlines' do
       it 'parses formatting within citations' do
         page = (1 + rand(1000)).to_s
