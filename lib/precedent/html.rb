@@ -1,5 +1,4 @@
 require_relative 'parse'
-require 'ap'
 require 'nokogiri'
 
 module Precedent
@@ -49,74 +48,90 @@ p { text-indent: 3ex; }
     end
   end
 
+  def self.simple_node(mapping, content, parent)
+    name, css_class = mapping
+    node = Nokogiri::XML::Node.new(name, parent)
+    node['class'] = css_class if css_class
+    add_nodes(content[:content], node)
+    parent.add_child(node)
+  end
+
+  NODE_MAPPING = {
+    :indented => 'p',
+    :flush => ['p', 'flush'],
+    :smallcaps => ['span', 'smallcaps'],
+    :citation => 'cite',
+    :emphasis => 'em',
+    :quote => 'blockquote'
+  }
+
   def self.add_nodes(content, parent)
     case content
     when Array
       content.each {|e| add_nodes(e, parent) }
     when Hash
-      case content[:type]
-      when :indented
-        p = Nokogiri::XML::Node.new('p', parent)
-        add_nodes(content[:content], p)
-        parent.add_child(p)
-      when :flush
-        p = Nokogiri::XML::Node.new('p', parent)
-        p['class'] = 'flush'
-        add_nodes(content[:content], p)
-        parent.add_child(p)
-      when :heading
-        level = content[:level]
-        h = Nokogiri::XML::Node.new("h#{level}", parent)
-        add_nodes(content[:content], h)
-        parent.add_child(h)
-      when :rule
-        parent.add_child(Nokogiri::XML::Node.new("hr", parent))
-      when :quote
-        blockquote = Nokogiri::XML::Node.new("blockquote", parent)
-        add_nodes(content[:content], blockquote)
-        parent.add_child(blockquote)
-      when :reference
-        marker = content[:marker]
-        sup = Nokogiri::XML::Node.new("sup", parent)
-        a = Nokogiri::XML::Node.new("a", sup)
-        a['id'] = "reference-#{marker}" 
-        a['class'] = "reference"
-        a['href'] = "#footnote-#{marker}"
-        a.inner_html = marker
-        sup.add_child(a)
-        parent.add_child(sup)
-      when :footnote
-        marker = content[:marker]
-        aside = Nokogiri::XML::Node.new('aside', parent)
-        aside['id'] = "footnote-#{marker}"
-        children = content[:content]
-        first = children.first
-        backref = {
-          :type => :backref, 
-          :marker => marker
-        }
-        # append a back reference to the first paragraph
-        if first[:content].is_a?(Array)
-          first[:content].unshift(backref)
-        else
-          first[:content] = [backref, first[:content]]
+      if (mapping = NODE_MAPPING[content[:type]])
+        simple_node(mapping, content, parent)
+      else
+        case content[:type]
+        when :heading
+          simple_node("h#{content[:level]}", content, parent)
+        when :rule
+          parent.add_child(Nokogiri::XML::Node.new("hr", parent))
+        when :reference
+          marker = content[:marker]
+          sup = Nokogiri::XML::Node.new("sup", parent)
+          a = Nokogiri::XML::Node.new("a", sup)
+          a['id'] = "reference-#{marker}" 
+          a['class'] = "reference"
+          a['href'] = "#footnote-#{marker}"
+          a.inner_html = marker
+          sup.add_child(a)
+          parent.add_child(sup)
+        when :break
+          page = content[:page]
+          a = Nokogiri::XML::Node.new('a', parent)
+          a['class'] = 'break'
+          a['data-page'] = page.to_s
+          add_nodes(page.to_s, a)
+          parent.add_child(a)
+        when :footnote
+          marker = content[:marker]
+          aside = Nokogiri::XML::Node.new('aside', parent)
+          aside['id'] = "footnote-#{marker}"
+          children = content[:content]
+          first = children.first
+          backref = {
+            :type => :back_reference, 
+            :marker => marker
+          }
+          # Append a back reference to the first paragraph, then send it
+          # down with the hash content to be appended to the <aside>.
+          if first[:content].is_a?(Array)
+            first[:content].unshift(backref)
+          else
+            first[:content] = [backref, first[:content]]
+          end
+          add_nodes(children, aside)
+          parent.add_child(aside)
+        # created under :footnote above
+        when :back_reference
+          marker = content[:marker]
+          sup = Nokogiri::XML::Node.new("sup", parent)
+          a = Nokogiri::XML::Node.new("a", sup)
+          a['class'] = "back-reference"
+          a['href'] = "#reference-#{marker}"
+          a.inner_html = marker
+          sup.add_child(a)
+          parent.add_child(sup)
+          # insert space between back reference and paragraph text
+          parent.add_child(Nokogiri::XML::Text.new(' ', parent))
         end
-        add_nodes(children, aside)
-        parent.add_child(aside)
-      when :backref
-        marker = content[:marker]
-        sup = Nokogiri::XML::Node.new("sup", parent)
-        a = Nokogiri::XML::Node.new("a", sup)
-        a['class'] = "back-reference"
-        a['href'] = "#reference-#{marker}"
-        a.inner_html = marker
-        sup.add_child(a)
-        parent.add_child(sup)
-        # insert space between back reference and paragraph text
-        parent.add_child(Nokogiri::XML::Text.new(' ', parent))
       end
     when String
       parent.add_child Nokogiri::XML::Text.new(content, parent)
+    else
+      raise "Unexpected element: #{content}"
     end
   end
 

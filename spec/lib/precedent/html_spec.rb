@@ -62,7 +62,36 @@ describe Precedent do
 
   specify do
     result = Precedent.to_html("#{first}")
-    puts result
     result.should_not match(/<section class=\"footnotes\"/)
+  end
+
+  context 'inline elements' do
+    specify do
+      Precedent.to_html(
+        "//#{word}//"
+      ).should include("<em>#{word}</em>")
+    end
+
+    specify do
+      Precedent.to_html(
+        "<<#{word}>>"
+      ).should include("<span class=\"smallcaps\">#{word}</span>")
+    end
+
+    specify do
+      Precedent.to_html(
+        "{{//#{word}// <<#{another_word}>>}}"
+      ).should include("<cite>")
+    end
+
+    specify do
+      page = (1 + rand(1000)).to_s
+      result = Precedent.to_html(
+        "@@#{page}@@"
+      )
+      result.should match(%r{<a.+class="break"})
+      result.should match(%r{<a.+data-page="#{page}">})
+      result.should match(%r{>#{page}</a>})
+    end
   end
 end
