@@ -27,8 +27,7 @@ describe Precedent do
 
     specify { 
       Precedent.parse("    #{first}\n\n      #{second}").should == [
-        {
-          :type => :quote,
+        { :type => :quote,
           :content => [
             { :type => :flush, :content => first },
             { :type => :indented, :content => second }
@@ -104,8 +103,7 @@ describe Precedent do
 #{third}
         eos
         ).should == [
-          {
-            :type => :meta,
+          { :type => :meta,
             :content => {
               word.capitalize.to_sym => first,
               another_word.capitalize.to_sym => second
@@ -118,50 +116,51 @@ describe Precedent do
       it "casts metadata" do
         num = (1 + rand(1000)).to_s
         date = (Date.today - (1 + rand(1000)))
-        truth = ['yes','true','True','Yes'].sample
-        falsity = ['no', 'false', 'False', 'No'].sample
-        Precedent.parse(<<-eos
+        ['yes','true','True','Yes'].each do |truth|
+          ['no', 'false', 'False', 'No'].each do |falsity|
+            Precedent.parse(<<-eos
 #{word.capitalize}: #{num}
 #{another_word.capitalize}: #{date.strftime('%Y-%m-%d')}
 #{word.capitalize + another_word}: #{truth}
 #{another_word.capitalize + word}: #{falsity}
 
 #{third}
-        eos
-        ).should == [
-            {
-              :type => :meta,
-              :content => {
-                word.capitalize.to_sym => num.to_i,
-                another_word.capitalize.to_sym => date,
-                (word.capitalize + another_word).to_sym => true,
-                (another_word.capitalize + word).to_sym => false
-              }
-            },
-            {:type => :flush, :content => third }
-          ]
+            eos
+            ).should == [
+                { :type => :meta,
+                  :content => {
+                    word.capitalize.to_sym => num.to_i,
+                    another_word.capitalize.to_sym => date,
+                    (word.capitalize + another_word).to_sym => true,
+                    (another_word.capitalize + word).to_sym => false
+                  }
+                },
+                {:type => :flush, :content => third }
+              ]
+          end
+        end
       end
     end
 
-
     context 'footnotes' do
       it "parses footnotes" do
-        marker = [(1 + rand(100)).to_s, '*', "\u2020", "\u2021"].sample
-        input = <<-eos
+        [(1 + rand(100)).to_s, '*', "\u2020", "\u2021"].each do |marker|
+          Precedent.parse(<<-eos
 ^#{marker} #{first}
 #{second}
 
 ^ #{third}
-        eos
-        Precedent.parse(input).should == [
-          { :type => :footnote,
-            :marker => marker,
-            :content => [
-              { :type => :indented, :content => "#{first} #{second}" },
-              { :type => :indented, :content => third }
-            ]
-          }
-        ]
+          eos
+          ).should == [
+            { :type => :footnote,
+              :marker => marker,
+              :content => [
+                { :type => :indented, :content => "#{first} #{second}" },
+                { :type => :indented, :content => third }
+              ]
+            }
+          ]
+        end
       end
     end
   end
@@ -189,6 +188,29 @@ describe Precedent do
           ]
         }
       ]
+    end
+
+    it 'parses page breaks' do
+      number = (1 + rand(1000)).to_s
+      Precedent.parse("  #{first}@@#{number}@@#{second}").should == [
+        { :type => :indented,
+          :content => [
+            first, { :type => :break, :page => number.to_i }, second
+          ]
+        }
+      ]
+    end
+
+    it 'parses footnote references' do
+      [(1 + rand(100)).to_s, '*', "\u2020", "\u2021"].each do |marker|
+        Precedent.parse("  #{first}[[#{marker}]]#{second}").should == [
+          { :type => :indented,
+            :content => [
+              first, { :type => :reference, :marker => marker }, second
+            ]
+          }
+        ]
+      end
     end
   end
 end
