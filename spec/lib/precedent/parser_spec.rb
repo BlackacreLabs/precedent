@@ -236,5 +236,24 @@ describe Precedent do
         ]
       end
     end
+
+    context 'inlines within inlines' do
+      it 'parses formatting within citations' do
+        page = (1 + rand(1000)).to_s
+        Precedent.parse("{{//#{word}// @@#{page}@@<<#{another_word}>>}}").should == [
+          { :type => :flush,
+            :content => {
+              :type => :citation,
+              :content => [
+                { :type => :emphasis, :content => word },
+                ' ',
+                { :type => :break, :page => page.to_i },
+                { :type => :smallcaps, :content => another_word }
+              ]
+            }
+          }
+        ]
+      end
+    end
   end
 end
