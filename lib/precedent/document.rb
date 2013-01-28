@@ -20,6 +20,12 @@ module Precedent
 
     include Meta
 
+    module Root0
+      def content
+        elements[1]
+      end
+    end
+
     def _nt_root
       start_index = index
       if node_cache[:root].has_key?(index)
@@ -31,20 +37,38 @@ module Precedent
         return cached
       end
 
-      s0, i0 = [], index
-      loop do
-        r1 = _nt_block
-        if r1
-          s0 << r1
-        else
-          break
-        end
+      i0, s0 = index, []
+      r2 = _nt_block_end
+      if r2
+        r1 = r2
+      else
+        r1 = instantiate_node(SyntaxNode,input, index...index)
       end
-      if s0.empty?
+      s0 << r1
+      if r1
+        s3, i3 = [], index
+        loop do
+          r4 = _nt_block
+          if r4
+            s3 << r4
+          else
+            break
+          end
+        end
+        if s3.empty?
+          @index = i3
+          r3 = nil
+        else
+          r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
+        end
+        s0 << r3
+      end
+      if s0.last
+        r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+        r0.extend(Root0)
+      else
         @index = i0
         r0 = nil
-      else
-        r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
       end
 
       node_cache[:root][start_index] = r0

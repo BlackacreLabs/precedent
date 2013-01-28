@@ -27,19 +27,19 @@ module Precedent
       end
 
       i0 = index
-      r1 = _nt_horizontal_rule
+      r1 = _nt_footnote
       if r1
         r0 = r1
       else
-        r2 = _nt_ragged_left
+        r2 = _nt_horizontal_rule
         if r2
           r0 = r2
         else
-          r3 = _nt_quote
+          r3 = _nt_ragged_left
           if r3
             r0 = r3
           else
-            r4 = _nt_footnote
+            r4 = _nt_quote
             if r4
               r0 = r4
             else
@@ -66,9 +66,6 @@ module Precedent
     end
 
     module HorizontalRule0
-    end
-
-    module HorizontalRule1
       def build
         { :type => :rule }
       end
@@ -85,31 +82,12 @@ module Precedent
         return cached
       end
 
-      i0, s0 = index, []
       if has_terminal?('* * *', false, index)
-        r1 = instantiate_node(SyntaxNode,input, index...(index + 5))
+        r0 = instantiate_node(SyntaxNode,input, index...(index + 5))
+        r0.extend(HorizontalRule0)
         @index += 5
       else
         terminal_parse_failure('* * *')
-        r1 = nil
-      end
-      s0 << r1
-      if r1
-        if has_terminal?("\n", false, index)
-          r2 = instantiate_node(SyntaxNode,input, index...(index + 1))
-          @index += 1
-        else
-          terminal_parse_failure("\n")
-          r2 = nil
-        end
-        s0 << r2
-      end
-      if s0.last
-        r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-        r0.extend(HorizontalRule0)
-        r0.extend(HorizontalRule1)
-      else
-        @index = i0
         r0 = nil
       end
 
@@ -126,7 +104,8 @@ module Precedent
 
     module RaggedLeft1
       def build
-        { :type => :ragged_left, :content => content.build }
+        { :type => :ragged_left,
+		    :content => content.build }
       end
     end
 
@@ -176,7 +155,8 @@ module Precedent
 
     module Indented1
       def build
-        { :type => :indented, :content => content.build }
+        { :type => :indented,
+		    :content => content.build }
       end
     end
 
@@ -276,12 +256,12 @@ module Precedent
     end
 
     module Footnote0
-      def content
-        elements[2]
+      def block_end
+        elements[0]
       end
 
-      def block_end
-        elements[3]
+      def footnote_par
+        elements[1]
       end
     end
 
@@ -294,12 +274,8 @@ module Precedent
         elements[3]
       end
 
-      def block_end
-        elements[4]
-      end
-
       def additional
-        elements[5]
+        elements[4]
       end
     end
 
@@ -311,7 +287,7 @@ module Precedent
           :content => [
             { :type => :indented, :content => first_content.build }
           ] + additional.elements.map { |e|
-            { :type => :indented, :content => e.content.build }
+				e.footnote_par.build
           }
         }
       end
@@ -338,116 +314,118 @@ module Precedent
       end
       s0 << r1
       if r1
-        s2, i2 = [], index
+        i2 = index
+        s3, i3 = [], index
         loop do
-          if has_terminal?('\G[0-9*†‡]', true, index)
-            r3 = true
+          if has_terminal?('\G[0-9]', true, index)
+            r4 = true
             @index += 1
           else
-            r3 = nil
+            r4 = nil
           end
-          if r3
-            s2 << r3
+          if r4
+            s3 << r4
           else
             break
           end
         end
-        if s2.empty?
-          @index = i2
-          r2 = nil
+        if s3.empty?
+          @index = i3
+          r3 = nil
         else
-          r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
+          r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
+        end
+        if r3
+          r2 = r3
+        else
+          if has_terminal?('*', false, index)
+            r5 = instantiate_node(SyntaxNode,input, index...(index + 1))
+            @index += 1
+          else
+            terminal_parse_failure('*')
+            r5 = nil
+          end
+          if r5
+            r2 = r5
+          else
+            if has_terminal?('†', false, index)
+              r6 = instantiate_node(SyntaxNode,input, index...(index + 1))
+              @index += 1
+            else
+              terminal_parse_failure('†')
+              r6 = nil
+            end
+            if r6
+              r2 = r6
+            else
+              if has_terminal?('‡', false, index)
+                r7 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                @index += 1
+              else
+                terminal_parse_failure('‡')
+                r7 = nil
+              end
+              if r7
+                r2 = r7
+              else
+                @index = i2
+                r2 = nil
+              end
+            end
+          end
         end
         s0 << r2
         if r2
-          s4, i4 = [], index
+          s8, i8 = [], index
           loop do
             if has_terminal?(' ', false, index)
-              r5 = instantiate_node(SyntaxNode,input, index...(index + 1))
+              r9 = instantiate_node(SyntaxNode,input, index...(index + 1))
               @index += 1
             else
               terminal_parse_failure(' ')
-              r5 = nil
+              r9 = nil
             end
-            if r5
-              s4 << r5
+            if r9
+              s8 << r9
             else
               break
             end
           end
-          if s4.empty?
-            @index = i4
-            r4 = nil
+          if s8.empty?
+            @index = i8
+            r8 = nil
           else
-            r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
+            r8 = instantiate_node(SyntaxNode,input, i8...index, s8)
           end
-          s0 << r4
-          if r4
-            r6 = _nt_inline
-            s0 << r6
-            if r6
-              r7 = _nt_block_end
-              s0 << r7
-              if r7
-                s8, i8 = [], index
-                loop do
-                  i9, s9 = index, []
-                  if has_terminal?('^', false, index)
-                    r10 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                    @index += 1
-                  else
-                    terminal_parse_failure('^')
-                    r10 = nil
-                  end
-                  s9 << r10
-                  if r10
-                    s11, i11 = [], index
-                    loop do
-                      if has_terminal?(' ', false, index)
-                        r12 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                        @index += 1
-                      else
-                        terminal_parse_failure(' ')
-                        r12 = nil
-                      end
-                      if r12
-                        s11 << r12
-                      else
-                        break
-                      end
-                    end
-                    if s11.empty?
-                      @index = i11
-                      r11 = nil
-                    else
-                      r11 = instantiate_node(SyntaxNode,input, i11...index, s11)
-                    end
-                    s9 << r11
-                    if r11
-                      r13 = _nt_inline
-                      s9 << r13
-                      if r13
-                        r14 = _nt_block_end
-                        s9 << r14
-                      end
-                    end
-                  end
-                  if s9.last
-                    r9 = instantiate_node(SyntaxNode,input, i9...index, s9)
-                    r9.extend(Footnote0)
-                  else
-                    @index = i9
-                    r9 = nil
-                  end
-                  if r9
-                    s8 << r9
-                  else
-                    break
-                  end
+          s0 << r8
+          if r8
+            r10 = _nt_inline
+            s0 << r10
+            if r10
+              s11, i11 = [], index
+              loop do
+                i12, s12 = index, []
+                r13 = _nt_block_end
+                s12 << r13
+                if r13
+                  r14 = _nt_footnote_par
+                  s12 << r14
                 end
-                r8 = instantiate_node(SyntaxNode,input, i8...index, s8)
-                s0 << r8
+                if s12.last
+                  r12 = instantiate_node(SyntaxNode,input, i12...index, s12)
+                  r12.extend(Footnote0)
+                else
+                  @index = i12
+                  r12 = nil
+                end
+                if r12
+                  s11 << r12
+                else
+                  break
+                end
               end
+              r11 = instantiate_node(SyntaxNode,input, i11...index, s11)
+              s0 << r11
             end
           end
         end
@@ -466,21 +444,119 @@ module Precedent
       r0
     end
 
+    module FootnotePar0
+      def content
+        elements[2]
+      end
+
+    end
+
+    module FootnotePar1
+			def build
+				{ :type => :indented,
+				  :content => content.build }
+			end
+    end
+
+    def _nt_footnote_par
+      start_index = index
+      if node_cache[:footnote_par].has_key?(index)
+        cached = node_cache[:footnote_par][index]
+        if cached
+          cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+          @index = cached.interval.end
+        end
+        return cached
+      end
+
+      i0, s0 = index, []
+      if has_terminal?('^', false, index)
+        r1 = instantiate_node(SyntaxNode,input, index...(index + 1))
+        @index += 1
+      else
+        terminal_parse_failure('^')
+        r1 = nil
+      end
+      s0 << r1
+      if r1
+        s2, i2 = [], index
+        loop do
+          if has_terminal?(' ', false, index)
+            r3 = instantiate_node(SyntaxNode,input, index...(index + 1))
+            @index += 1
+          else
+            terminal_parse_failure(' ')
+            r3 = nil
+          end
+          if r3
+            s2 << r3
+          else
+            break
+          end
+        end
+        if s2.empty?
+          @index = i2
+          r2 = nil
+        else
+          r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
+        end
+        s0 << r2
+        if r2
+          r4 = _nt_inline
+          s0 << r4
+          if r4
+            if has_terminal?("\n", false, index)
+              r5 = instantiate_node(SyntaxNode,input, index...(index + 1))
+              @index += 1
+            else
+              terminal_parse_failure("\n")
+              r5 = nil
+            end
+            s0 << r5
+          end
+        end
+      end
+      if s0.last
+        r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+        r0.extend(FootnotePar0)
+        r0.extend(FootnotePar1)
+      else
+        @index = i0
+        r0 = nil
+      end
+
+      node_cache[:footnote_par][start_index] = r0
+
+      r0
+    end
+
     module Quote0
-      def elem
+      def block_end
         elements[0]
       end
 
-      def block_end
+      def elem
         elements[1]
       end
     end
 
     module Quote1
+      def first
+        elements[0]
+      end
+
+      def additional
+        elements[1]
+      end
+    end
+
+    module Quote2
       def build
         {
           :type => :quote,
-          :content => elements.map {|e| e.elem.build }
+          :content => [first.build] + additional.elements.map { |e|
+				e.elem.build
+          }
         }
       end
     end
@@ -496,51 +572,76 @@ module Precedent
         return cached
       end
 
-      s0, i0 = [], index
-      loop do
-        i1, s1 = index, []
-        i2 = index
-        r3 = _nt_indented_rule
+      i0, s0 = index, []
+      i1 = index
+      r2 = _nt_indented_rule
+      if r2
+        r1 = r2
+      else
+        r3 = _nt_indented_quote
         if r3
-          r2 = r3
+          r1 = r3
         else
-          r4 = _nt_indented_quote
+          r4 = _nt_flush_quote
           if r4
-            r2 = r4
+            r1 = r4
           else
-            r5 = _nt_flush_quote
-            if r5
-              r2 = r5
-            else
-              @index = i2
-              r2 = nil
-            end
+            @index = i1
+            r1 = nil
           end
         end
-        s1 << r2
-        if r2
-          r6 = _nt_block_end
-          s1 << r6
-        end
-        if s1.last
-          r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
-          r1.extend(Quote0)
-        else
-          @index = i1
-          r1 = nil
-        end
-        if r1
-          s0 << r1
-        else
-          break
-        end
       end
-      if s0.empty?
-        @index = i0
-        r0 = nil
-      else
+      s0 << r1
+      if r1
+        s5, i5 = [], index
+        loop do
+          i6, s6 = index, []
+          r7 = _nt_block_end
+          s6 << r7
+          if r7
+            i8 = index
+            r9 = _nt_indented_rule
+            if r9
+              r8 = r9
+            else
+              r10 = _nt_indented_quote
+              if r10
+                r8 = r10
+              else
+                r11 = _nt_flush_quote
+                if r11
+                  r8 = r11
+                else
+                  @index = i8
+                  r8 = nil
+                end
+              end
+            end
+            s6 << r8
+          end
+          if s6.last
+            r6 = instantiate_node(SyntaxNode,input, i6...index, s6)
+            r6.extend(Quote0)
+          else
+            @index = i6
+            r6 = nil
+          end
+          if r6
+            s5 << r6
+          else
+            break
+          end
+        end
+        r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
+        s0 << r5
+      end
+      if s0.last
         r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
         r0.extend(Quote1)
+        r0.extend(Quote2)
+      else
+        @index = i0
+        r0 = nil
       end
 
       node_cache[:quote][start_index] = r0
@@ -549,9 +650,6 @@ module Precedent
     end
 
     module IndentedRule0
-    end
-
-    module IndentedRule1
       def build
         { :type => :rule }
       end
@@ -568,31 +666,12 @@ module Precedent
         return cached
       end
 
-      i0, s0 = index, []
       if has_terminal?('    * * *', false, index)
-        r1 = instantiate_node(SyntaxNode,input, index...(index + 9))
+        r0 = instantiate_node(SyntaxNode,input, index...(index + 9))
+        r0.extend(IndentedRule0)
         @index += 9
       else
         terminal_parse_failure('    * * *')
-        r1 = nil
-      end
-      s0 << r1
-      if r1
-        if has_terminal?("\n", false, index)
-          r2 = instantiate_node(SyntaxNode,input, index...(index + 1))
-          @index += 1
-        else
-          terminal_parse_failure("\n")
-          r2 = nil
-        end
-        s0 << r2
-      end
-      if s0.last
-        r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-        r0.extend(IndentedRule0)
-        r0.extend(IndentedRule1)
-      else
-        @index = i0
         r0 = nil
       end
 
@@ -609,7 +688,8 @@ module Precedent
 
     module FlushQuote1
       def build
-        { :type => :flush, :content => content.build }
+        { :type => :flush,
+		    :content => content.build }
       end
     end
 
@@ -659,7 +739,8 @@ module Precedent
 
     module IndentedQuote1
       def build
-        { :type => :indented, :content => content.build }
+        { :type => :indented,
+		    :content => content.build }
       end
     end
 

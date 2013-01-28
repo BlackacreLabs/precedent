@@ -68,9 +68,9 @@ describe Precedent do
               first,
               { :type => :footnote,
                 :marker => marker,
-                :content => [
-                  { :type => :indented, :content => third }
-                ]
+                :content => {
+                  :type => :indented, :content => third
+                }
               },
               ' ' + second
             ]
@@ -99,6 +99,45 @@ Style: Board of Education v. Tom F.
           }
         ]
       }
+    end
+
+    specify do
+      Precedent.load(
+        <<-eos
+^* A Footnote paragraph.
+
+Another paragraph.[[*]]
+        eos
+      )[:content].should == [
+        { :type => :flush,
+          :content => [
+            "Another paragraph.",
+            { :type => :footnote,
+              :marker => '*',
+              :content => {
+                :type => :indented,
+                :content => 'A Footnote paragraph.'
+              }
+            }
+          ]
+        }
+      ]
+    end
+
+    specify do
+      Precedent.load(
+        <<-eos
+    Quote paragraph.
+
+Another paragraph.
+        eos
+      )[:content].should == [
+        { :type => :quote,
+          :content => [
+            { :type => :flush, :content => "Quote paragraph." } ] },
+        { :type => :flush,
+          :content => 'Another paragraph.' }
+      ]
     end
   end
 end

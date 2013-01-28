@@ -9,7 +9,7 @@ module Precedent
     include Meta
 
     rule root
-      block+
+      block_end? content:block+
     end
 
     rule block
