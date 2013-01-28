@@ -18,7 +18,23 @@ module Precedent
       key:([A-Z] [a-zA-Z]+) ':' ' '+ value:[^\n]+
       {
         def build
-          return { key.text_value.to_sym => value.text_value }
+          return { key.text_value.to_sym => interpreted_value }
+        end
+
+        def interpreted_value
+          v = value.text_value.strip
+          case v
+          when /^\d+$/
+            v.to_i
+          when /^\d\d\d\d-\d\d-\d\d$/
+            Date.parse(v)
+          when /^true|yes$/i
+            true
+          when /^false|no$/i
+            false
+          else
+            v
+          end
         end
       }
     end
