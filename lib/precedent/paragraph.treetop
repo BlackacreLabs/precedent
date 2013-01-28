@@ -5,7 +5,7 @@ module Precedent
     include Inline
 
     rule paragraph
-      indented_quote / quote / indented / flush
+      quote / indented / flush
     end
 
     rule indented
@@ -21,14 +21,26 @@ module Precedent
     end
     
     rule quote
+      (indented_quote / flush_quote)+
+      {
+        def build
+          {
+            :type => :quote,
+            :content => elements.map(&:build)
+          }
+        end
+      }
+    end
+
+    rule flush_quote
       '    ' content:inline {
-        def build ; { :type => :quote, :content => content.build } ; end
+        def build ; { :type => :flush, :content => content.build } ; end
       }
     end
     
     rule indented_quote
       '      ' content:inline {
-        def build ; { :type => :indented_quote, :content => content.build } ; end
+        def build ; { :type => :indented, :content => content.build } ; end
       }
     end
   end

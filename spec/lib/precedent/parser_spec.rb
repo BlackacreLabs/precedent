@@ -21,14 +21,14 @@ describe Precedent do
     specify { 
       Precedent.parse("  #{first}\n\n      #{second}").should == [
         { :type => :indented, :content => first },
-        { :type => :indented_quote, :content => second }
+        { :type => :quote, :content => [ { :type => :indented, :content => second } ] }
       ]
     }
 
     specify { 
       Precedent.parse("  #{first}\n\n    #{second}").should == [
         { :type => :indented, :content => first },
-        { :type => :quote, :content => second }
+        { :type => :quote, :content => [ { :type => :flush, :content => second } ] }
       ]
     }
 
