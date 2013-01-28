@@ -5,7 +5,12 @@ module Precedent
     include Inline
 
     rule paragraph
-      quote / indented / flush
+      horizontal_rule / quote / footnote / indented / flush
+    end
+
+    rule horizontal_rule
+      '* * *' "\n"
+      { def build ; { :type => :rule } ; end }
     end
 
     rule indented
@@ -19,17 +24,37 @@ module Precedent
         def build ; { :type => :flush, :content => content.build } ; end
       }
     end
-    
-    rule quote
-      (indented_quote / flush_quote)+
+
+    rule footnote
+      '^' marker:[^ ]+ ' '+ first_content:inline block_end
+      additional:('^' ' '+ content:inline block_end)*
       {
         def build
           {
-            :type => :quote,
-            :content => elements.map(&:build)
+            :type => :footnote,
+            :marker => marker.text_value,
+            :content => [
+              { :type => :indented, :content => first_content.build }
+            ] + additional.elements.map { |e|
+              { :type => :indented, :content => e.content.build }
+            }
           }
         end
       }
+    end
+
+    rule quote
+      (elem:(indented_rule / indented_quote / flush_quote) block_end)+
+      {
+        def build
+          { :type => :quote, :content => elements.map {|e| e.elem.build } }
+        end
+      }
+    end
+
+    rule indented_rule
+      '    * * *' "\n"
+      { def build ; { :type => :rule } ; end }
     end
 
     rule flush_quote

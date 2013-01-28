@@ -26,6 +26,18 @@ describe Precedent do
     }
 
     specify { 
+      Precedent.parse("    #{first}\n\n      #{second}").should == [
+        {
+          :type => :quote,
+          :content => [
+            { :type => :flush, :content => first },
+            { :type => :indented, :content => second }
+          ]
+        }
+      ]
+    }
+
+    specify { 
       Precedent.parse("  #{first}\n\n    #{second}").should == [
         { :type => :indented, :content => first },
         { :type => :quote, :content => [ { :type => :flush, :content => second } ] }
@@ -45,6 +57,42 @@ describe Precedent do
         :level => hashes.length,
         :content => first
       }]
+    end
+
+    context "rules" do
+      it "parses horizontal rules" do
+        Precedent.parse(<<-eos
+#{first}
+
+* * *
+
+#{second}
+        eos
+        ).should == [
+          { :type => :flush, :content => first },
+          { :type => :rule },
+          { :type => :flush, :content => second }
+        ]
+      end
+
+      it "parses horizontal rules within blockquotes" do
+        Precedent.parse(<<-eos
+    #{first}
+
+    * * *
+
+    #{second}
+        eos
+        ).should == [
+          { :type => :quote,
+            :content => [
+              { :type => :flush, :content => first },
+              { :type => :rule },
+              { :type => :flush, :content => second }
+            ]
+          }
+        ]
+      end
     end
 
     context 'metadata' do
@@ -94,5 +142,28 @@ describe Precedent do
           ]
       end
     end
+
+
+    context 'footnotes' do
+      it "parses footnotes" do
+        marker = [(1 + rand(100)).to_s, '*', "\u2020", "\u2021"].sample
+        input = <<-eos
+^#{marker} #{first}
+#{second}
+
+^ #{third}
+        eos
+        Precedent.parse(input).should == [
+          { :type => :footnote,
+            :marker => marker,
+            :content => [
+              { :type => :indented, :content => "#{first} #{second}" },
+              { :type => :indented, :content => third }
+            ]
+          }
+        ]
+      end
+    end
+
   end
 end
