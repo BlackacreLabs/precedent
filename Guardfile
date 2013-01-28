@@ -2,7 +2,7 @@ guard :bundler do
   watch("precedent.gemspec")
 end
 
-guard :rspec, :spec_paths => ['spec'], :cli => '-f progress' do
+guard :rspec, :spec_paths => ['spec'] do
   watch(%r{^spec/.+_spec\.rb$})
   watch(%r{^lib/(.+)\.rb$}) { |m| "spec/lib/#{m[1]}_spec.rb" }
   watch(%r{^lib/(.+)\.treetop$}) { |m| "spec/lib/precedent/parser_spec.rb" }
