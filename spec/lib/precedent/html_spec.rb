@@ -68,7 +68,7 @@ describe Precedent do
   context 'inline elements' do
     specify do
       Precedent.to_html(
-        "//#{word}//"
+        "\\\\#{word}\\\\"
       ).should include("<em>#{word}</em>")
     end
 

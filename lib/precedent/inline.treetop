@@ -29,13 +29,13 @@ module Precedent
     end
 
     rule inline_element
-      word /
-      space /
+      citation /
       emphasis /
       smallcaps /
-      citation /
+      reference /
       page_break /
-      reference
+      space /
+      word
     end
 
     rule smallcaps
@@ -49,7 +49,7 @@ module Precedent
     end
 
     rule emphasis
-      '//' content:inline '//'
+      '\\\\' content:inline '\\\\'
       {
         def build
           { :type => :emphasis,
@@ -98,7 +98,17 @@ module Precedent
     end
 
     rule word
-      [a-zA-Z.]+
+      (
+        # not a starting or ending token
+        !(
+          '{{' / '}}' / # citations
+          '<<' / '>>' / # smallcaps
+          '[[' / ']]' / # references
+          '\\\\' /      # italics
+          '@@'          # page breaks
+        )
+        char
+      )+
       {
         def build
           text_value
@@ -113,6 +123,10 @@ module Precedent
           ' '
         end 
       }
+    end
+
+    rule char
+      [\S]
     end
   end
 end

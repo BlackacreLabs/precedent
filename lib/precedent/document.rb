@@ -83,11 +83,11 @@ module Precedent
         if r3
           r1 = r3
         else
-          r4 = _nt_paragraph
+          r4 = _nt_heading
           if r4
             r1 = r4
           else
-            r5 = _nt_heading
+            r5 = _nt_paragraph
             if r5
               r1 = r5
             else

@@ -15,7 +15,7 @@ module Precedent
     rule block
       # Note the use of the content label in reliance upon the generic
       # #build() implementation in node_patch.rb.
-      content:(comment / meta / paragraph / heading) block_end
+      content:(comment / meta / heading / paragraph) block_end
     end
 
     rule block_end

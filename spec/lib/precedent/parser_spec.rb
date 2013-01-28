@@ -237,7 +237,7 @@ describe Precedent do
 
     it 'parses emphasis' do
       Precedent.parse(
-        "  #{first} //#{second}// #{third}"
+        "  #{first} \\\\#{second}\\\\ #{third}"
       ).should == [
         { :type => :indented,
           :content => [
@@ -265,6 +265,21 @@ describe Precedent do
       ]
     end
 
+    it 'parses citations' do
+      Precedent.parse(
+        "#{first}{{#{second}}}#{third}"
+      ).should == [
+        { :type => :flush,
+          :content => [
+            first,
+            { :type => :citation,
+              :content => second },
+            third
+          ]
+        }
+      ]
+    end
+
     it 'parses page breaks' do
       number = (1 + rand(1000)).to_s
       Precedent.parse(
@@ -281,9 +296,9 @@ describe Precedent do
     it 'parses footnote references' do
       [(1 + rand(100)).to_s, '*', "\u2020", "\u2021"].each do |marker|
         Precedent.parse(
-          "  #{first}[[#{marker}]]#{second}"
+          "#{first}[[#{marker}]]#{second}"
         ).should == [
-          { :type => :indented,
+          { :type => :flush,
             :content => [
               first,
               { :type => :reference,
@@ -311,11 +326,21 @@ describe Precedent do
       ]
     end
 
+    specify do
+      Precedent.parse(
+        "A URL http://www.google.com inline."
+      ).should == [
+        { :type => :flush,
+          :content => 'A URL http://www.google.com inline.'
+        }
+      ]
+    end
+
     context 'inlines within inlines' do
       it 'parses formatting within citations' do
         page = (1 + rand(1000)).to_s
         Precedent.parse(
-          "{{//#{word}// @@#{page}@@<<#{another_word}>>}}"
+          "{{\\\\#{word}\\\\ @@#{page}@@<<#{another_word}>>}}"
         ).should == [
           { :type => :flush,
             :content => {

@@ -1,3 +1,4 @@
+# encoding: utf-8
 require_relative '../../../lib/precedent/load'
 require 'faker'
 include Precedent
@@ -77,5 +78,27 @@ describe Precedent do
         ]
       }
     }
+  end
+
+  context 'problem cases' do
+    specify do
+      Precedent.load(
+         <<-eos
+Style: Board of Education v. Tom F.
+
+@@1@@193 Fed. Appx. 26, affirmed by an equally divided Court.
+        eos
+      ).should == {
+        :meta => { :Style => 'Board of Education v. Tom F.', },
+        :content => [
+          { :type => :flush,
+            :content => [
+              { :type => :break, :page => 1 },
+              "193 Fed. Appx. 26, affirmed by an equally divided Court."
+            ]
+          }
+        ]
+      }
+    end
   end
 end
