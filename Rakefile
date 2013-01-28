@@ -40,6 +40,8 @@ end
 
 require 'rspec/core/rake_task'
 
-RSpec::Core::RakeTask.new(:spec)
+desc "Generate grammars and run specs"
+RSpec::Core::RakeTask.new(:rspec)
+task :spec => [:grammars, :rspec]
 
 task :default => [:lines, :grammars, :spec]
