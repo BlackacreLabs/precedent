@@ -10,6 +10,12 @@ describe Precedent do
   let(:another_word) { Faker::Lorem.word }
 
   context 'block elements' do
+    it "ignores comment lines" do
+      Precedent.parse("%#{first}").should == [
+        { :type => :comment, :content => first }
+      ]
+    end
+
     specify {
       Precedent.parse("  #{first}\n\n#{second}").should == [
         { :type => :indented, :content => first },

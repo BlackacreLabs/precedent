@@ -13,11 +13,16 @@ module Precedent
     end
 
     rule block
-      content:(meta / paragraph / heading) block_end
+      content:(comment / meta / paragraph / heading) block_end
     end
 
     rule block_end
       blank_lines / eof
+    end
+
+    rule comment
+      "%" content:[^\n]+
+      { def build ; { :type => :comment, :content => content.text_value } ; end }
     end
 
     rule blank_lines
