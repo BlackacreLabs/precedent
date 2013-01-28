@@ -1,29 +1,12 @@
 # Precedent
 
-TODO: Write a gem description
+Lightweight markup for legal documents, inspired by the print style of
+the United States Reports.
 
-## Installation
+- Mixed symbolic (*, †, ‡) and numeric, non-sequential footnotes.
+- Elegant control of paragraph indentation (flush or indented)
+- Document-level metadata
+- Elegant citation identification
+- Small capitals
 
-Add this line to your application's Gemfile:
-
-    gem 'precedent'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install precedent
-
-## Usage
-
-TODO: Write usage instructions here
-
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+See `SYNTAX.md` for more details.
