@@ -1,0 +1,26 @@
+module Precedent
+  grammar Meta
+    rule meta
+      first:property more:("\n" prop:property)*
+      {
+        def build
+          {
+            :type => :meta,
+            :content => more.elements.reduce(first.build) { |mem, e|
+              mem.merge(e.prop.build)
+            }
+          }
+        end
+      }
+    end
+
+    rule property
+      key:([A-Z] [a-zA-Z]+) ':' ' '+ value:[^\n]+
+      {
+        def build
+          return { key.text_value.to_sym => value.text_value }
+        end
+      }
+    end
+  end
+end

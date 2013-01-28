@@ -1,28 +1,19 @@
 require File.dirname(__FILE__) + '/paragraph'
+require File.dirname(__FILE__) + '/heading'
+require File.dirname(__FILE__) + '/meta'
 
 module Precedent
   grammar Document
     include Paragraph
+    include Heading
+    include Meta
 
     rule root
       block+
     end
 
     rule block
-      content:(paragraph / heading) block_end
-    end
-
-    rule heading
-      hashes:'#'+ ' '+ content:inline
-      {
-        def build
-          {
-            :type => :heading,
-            :level => hashes.text_value.length,
-            :content => content.build
-          }
-        end
-      }
+      content:(meta / paragraph / heading) block_end
     end
 
     rule block_end

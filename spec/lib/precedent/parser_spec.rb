@@ -7,6 +7,9 @@ describe Precedent do
   context 'block elements' do
     let(:first) { Faker::Lorem.sentence }
     let(:second) { Faker::Lorem.sentence }
+    let(:third) { Faker::Lorem.sentence }
+    let(:word) { Faker::Lorem.word }
+    let(:another_word) { Faker::Lorem.word }
 
     specify {
       Precedent.parse("  #{first}\n\n#{second}").should == [
@@ -42,6 +45,25 @@ describe Precedent do
         :level => hashes.length,
         :content => first
       }]
+    end
+
+    it "recognizes metadata" do
+      Precedent.parse(<<-eos
+#{word.capitalize}: #{first}
+#{another_word.capitalize}: #{second}
+
+  #{third}
+      eos
+      ).should == [
+        {
+          :type => :meta,
+          :content => {
+            word.capitalize.to_sym => first,
+            another_word.capitalize.to_sym => second
+          }
+        },
+        {:type => :indented, :content => third }
+      ]
     end
   end
 end

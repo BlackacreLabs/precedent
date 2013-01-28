@@ -7,7 +7,7 @@ module Precedent
   def self.parse(input)
     tree = @@parser.parse(input)
     if tree.nil?
-      raise Exception, "Parse error at offset: #{@@parser.index}"
+      raise Exception, "Parse error at offset: #{@@parser.index}. #{@@parser.failure_reason}"
     end
     tree.build
   end
