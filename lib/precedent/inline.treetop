@@ -21,7 +21,7 @@ module Precedent
     end
 
     rule inline_element
-      word / space / emphasis / smallcaps / page_break / reference
+      word / space / emphasis / smallcaps / citation / page_break / reference
     end
 
     rule smallcaps
@@ -32,6 +32,11 @@ module Precedent
     rule emphasis
       '//' content:inline '//'
       { def build ; { :type => :emphasis, :content => content.build } ; end }
+    end
+
+    rule citation
+      '{{' content:inline '}}'
+      { def build ; { :type => :citation, :content => content.build } ; end }
     end
 
     rule page_break

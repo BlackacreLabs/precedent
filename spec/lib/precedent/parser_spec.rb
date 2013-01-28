@@ -1,6 +1,5 @@
 require_relative '../../../lib/precedent/parse'
 require 'faker'
-require 'ap'
 include Precedent
 
 describe Precedent do
@@ -184,6 +183,18 @@ describe Precedent do
           :content => [
             first + ' ',
             { :type => :emphasis, :content => second },
+            ' ' + third
+          ]
+        }
+      ]
+    end
+
+    it 'parses citations' do
+      Precedent.parse("  #{first} {{#{second}}} #{third}").should == [
+        { :type => :indented,
+          :content => [
+            first + ' ',
+            { :type => :citation, :content => second },
             ' ' + third
           ]
         }
