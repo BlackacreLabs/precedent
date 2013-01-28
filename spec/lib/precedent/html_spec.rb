@@ -22,7 +22,7 @@ describe Precedent do
     result.should match(
       %r{<article.+data-#{word.downcase}="#{another_word}"}
     )
-    result.should include "<p>#{first}</p>"
+    result.should include("<p>#{first}</p>")
   end
 
   specify do
@@ -41,9 +41,9 @@ describe Precedent do
     #{second}
     eos
     )
-    result.should include "<blockquote>"
-    result.should include "<p>#{first}</p>"
-    result.should include "<p class=\"flush\">#{second}</p>"
+    result.should include("<blockquote>")
+    result.should include("<p>#{first}</p>")
+    result.should include("<p class=\"flush\">#{second}</p>")
   end
 
   specify do
@@ -54,15 +54,15 @@ describe Precedent do
 ^#{marker} #{third}
     eos
     )
-    result.should match /<sup><a.+id=\"reference-#{marker}/
-    result.should match /<section.+class=\"footnotes\">/
-    result.should match /<aside.+id=\"footnote-#{marker}/
-    result.should match /<sup><a.+class=\"back-reference/
+    result.should match(/<sup><a.+id=\"reference-#{marker}/)
+    result.should match(/<section.+class=\"footnotes\">/)
+    result.should match(/<aside.+id=\"footnote-#{marker}/)
+    result.should match(/<sup><a.+class=\"back-reference/)
   end
 
   specify do
     result = Precedent.to_html("#{first}")
     puts result
-    result.should_not match /<section class=\"footnotes\"/
+    result.should_not match(/<section class=\"footnotes\"/)
   end
 end
