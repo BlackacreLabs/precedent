@@ -3,7 +3,8 @@ Precedent Syntax Guide
 
 ## Headings, Paragraphs, Quotes, Footnotes, and Rules
 
-Document elements can span multiple lines, but are separated by blank (empty) lines.
+Document elements can span multiple lines, but are separated by blank
+(empty) lines.
 
 ### Headings
 
@@ -35,9 +36,8 @@ continue on multiple lines.
       And this is an indented blockquote paragraph.
 
 This paragraph follows the block quotation, and will be rendered without
-indentation, i.e. flush with the left margin.
-This is still part of the flush paragraph, as no blank line separates it
-from previous lines.
+indentation, i.e. flush with the left margin. This is still part of the
+flush paragraph, as no blank line separates it from previous lines.
 
         This paragraph will be set flush against the right margin, or
 ragged left.
@@ -47,7 +47,12 @@ ragged left.
 
 ### Footnotes
 
-Footnote paragraphs are all indented paragraphs. The first paragraph in a footnote begins with a caret (`^`) and a marker, followed by at least one space before the text of the paragraph begins. The marker can be an integer, asterisk (`*`), dagger (`†`), or double dagger (`‡`). That marker should appear elsewhere within a footnote reference (discussed below).
+Footnote paragraphs are all indented paragraphs. The first paragraph in
+a footnote begins with a caret (`^`) and a marker, followed by at least
+one space before the text of the paragraph begins. The marker can be an
+integer, asterisk (`*`), dagger (`†`), or double dagger (`‡`). That
+marker should appear elsewhere within a footnote reference (discussed
+below).
 
 For example:
 
@@ -60,7 +65,9 @@ to a footnote with the marker "12".
 ^ This is another paragraph in the same footnote.
 ```
 
-Footnote paragraphs need not appear at the end of the document, nor must they appear immediately after the paragraph containing the corresponding reference. Footnotes can also appear in any order in the document.
+Footnote paragraphs need not appear at the end of the document, nor must
+they appear immediately after the paragraph containing the corresponding
+reference. Footnotes can also appear in any order in the document.
 
 ### Horizontal Rules
 
@@ -87,14 +94,19 @@ A flush body paragraph.
 Within a paragraph, the following can be used to format text:
 
 ```
-This is a paragraph. The final word in this sentence is //emphasized//. Small capitals can be set with the less-than and greater-than characters <<like so>>. Citations can be identified with double curly brackes and contain other formatting. {{//Id.//}} Page breaks@@2@@can be notated with at-signs. Footnote references appear in double brackets.[[1]]
+This is a paragraph. The final word in this sentence is //emphasized//.
+Small capitals can be set with the less-than and greater-than characters
+<<like so>>. Citations can be identified with double curly brackes and
+contain other formatting. {{//Id.//}} Page breaks@@2@@can be notated
+with at-signs. Footnote references appear in double brackets.[[1]]
 
 ^1 The text of the footnote.
 ```
 
 ## Metadata
 
-Metadata blocks permit non-content information about a document to be embedded within it.
+Metadata blocks permit non-content information about a document to be
+embedded within it.
 
 Metadata blocks are composed of lines containing:
 
@@ -114,7 +126,8 @@ Decided: 2013-01-22
 
 ### Special Metadata Types
 
-Content composed only of digits will be interpreted as an integer number.
+Content composed only of digits will be interpreted as an integer
+number.
 
 ```
 Opinions: 3

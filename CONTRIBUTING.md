@@ -1,6 +1,6 @@
 # Process
 
-1. Fork the [GitHub respository](https://github.com/BlackacreLabs/precedent)
+1. Fork the [respository](https://github.com/BlackacreLabs/precedent)
 2. Create a feature branch (`git checkout -b my-new-feature`).
 3. Make your changes.
 4. Regenerate the Treetop parsers (`rake`).
@@ -12,5 +12,5 @@
 
 # Style
 
-1. Wrap to 72 columns (`par -w72r`).
+1. Wrap hand-written source files to 72 columns (`par -w72r`).
 2. Use 2 spaces, not tabs, for Ruby source.

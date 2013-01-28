@@ -19,7 +19,9 @@ describe Precedent do
     eos
     )
     result.should include "<h1>#{word}</h1>"
-    result.should match %r{<article.+data-#{word.downcase}="#{another_word}"}
+    result.should match(
+      %r{<article.+data-#{word.downcase}="#{another_word}"}
+    )
     result.should include "<p>#{first}</p>"
   end
 
