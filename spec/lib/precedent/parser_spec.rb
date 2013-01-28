@@ -12,58 +12,89 @@ describe Precedent do
   context 'block elements' do
     it "ignores comment lines" do
       Precedent.parse("%#{first}").should == [
-        { :type => :comment, :content => first }
+        { :type => :comment,
+          :content => first }
       ]
     end
 
     specify {
-      Precedent.parse("  #{first}\n\n#{second}").should == [
-        { :type => :indented, :content => first },
-        { :type => :flush, :content => second }
+      Precedent.parse(
+        "  #{first}\n\n#{second}"
+      ).should == [
+        { :type => :indented,
+          :content => first },
+        { :type => :flush,
+          :content => second }
       ]
     }
 
     specify { 
-      Precedent.parse("  #{first}\n\n      #{second}").should == [
-        { :type => :indented, :content => first },
-        { :type => :quote, :content => [ { :type => :indented, :content => second } ] }
-      ]
-    }
-
-    specify { 
-      Precedent.parse("#{first}\n\n        #{second}").should == [
-        { :type => :flush, :content => first },
-        { :type => :ragged_left, :content => second }
-      ]
-    }
-
-    specify { 
-      Precedent.parse("    #{first}\n\n      #{second}").should == [
+      Precedent.parse(
+        "  #{first}\n\n      #{second}"
+      ).should == [
+        { :type => :indented,
+          :content => first },
         { :type => :quote,
           :content => [
-            { :type => :flush, :content => first },
-            { :type => :indented, :content => second }
+            { :type => :indented,
+              :content => second } ] }
+      ]
+    }
+
+    specify { 
+      Precedent.parse(
+        "#{first}\n\n        #{second}"
+      ).should == [
+        { :type => :flush,
+          :content => first },
+        { :type => :ragged_left,
+          :content => second }
+      ]
+    }
+
+    specify { 
+      Precedent.parse(
+        "    #{first}\n\n      #{second}"
+      ).should == [
+        { :type => :quote,
+          :content => [
+            { :type => :flush,
+              :content => first },
+            { :type => :indented,
+              :content => second }
           ]
         }
       ]
     }
 
     specify { 
-      Precedent.parse("  #{first}\n\n    #{second}").should == [
-        { :type => :indented, :content => first },
-        { :type => :quote, :content => [ { :type => :flush, :content => second } ] }
+      Precedent.parse(
+        "  #{first}\n\n    #{second}"
+      ).should == [
+        { :type => :indented,
+          :content => first },
+        { :type =>
+          :quote,
+            :content => [
+              { :type => :flush,
+                :content => second } ] }
       ]
     }
 
     it "combines paragraph lines" do
-      Precedent.parse("  #{first}\n#{second}").should == [{
-        :type => :indented, :content => "#{first} #{second}"
+      Precedent.parse(
+        "  #{first}\n#{second}"
+      ).should == [{
+        :type => :indented,
+        :content => "#{first} #{second}"
       }]
     end
 
     it "recognizes headings" do
       hashes = '#' * (1 + rand(3))
-      Precedent.parse("#{hashes} #{first}").should == [{
+      Precedent.parse(
+        "#{hashes} #{first}"
+      ).should == [{
         :type => :heading,
         :level => hashes.length,
         :content => first
@@ -80,9 +111,11 @@ describe Precedent do
 #{second}
         eos
         ).should == [
-          { :type => :flush, :content => first },
+          { :type => :flush,
+            :content => first },
           { :type => :rule },
-          { :type => :flush, :content => second }
+          { :type => :flush,
+            :content => second }
         ]
       end
 
@@ -97,9 +130,11 @@ describe Precedent do
         ).should == [
           { :type => :quote,
             :content => [
-              { :type => :flush, :content => first },
+              { :type => :flush,
+                :content => first },
               { :type => :rule },
-              { :type => :flush, :content => second }
+              { :type => :flush,
+                :content => second }
             ]
           }
         ]
@@ -121,7 +156,8 @@ describe Precedent do
               another_word.capitalize.to_sym => second
             }
           },
-          {:type => :flush, :content => third }
+          {:type => :flush,
+            :content => third }
         ]
       end
 
@@ -147,7 +183,8 @@ describe Precedent do
                     (another_word.capitalize + word).to_sym => false
                   }
                 },
-                {:type => :flush, :content => third }
+                {:type => :flush,
+                  :content => third }
               ]
           end
         end
@@ -156,7 +193,10 @@ describe Precedent do
 
     context 'footnotes' do
       it "parses footnotes" do
-        [(1 + rand(100)).to_s, '*', "\u2020", "\u2021"].each do |marker|
+        [
+          (1 + rand(100)).to_s,
+          '*', "\u2020", "\u2021"
+        ].each do |marker|
           Precedent.parse(<<-eos
 ^#{marker} #{first}
 #{second}
@@ -167,8 +207,10 @@ describe Precedent do
             { :type => :footnote,
               :marker => marker,
               :content => [
-                { :type => :indented, :content => "#{first} #{second}" },
-                { :type => :indented, :content => third }
+                { :type => :indented,
+                  :content => "#{first} #{second}" },
+                { :type => :indented,
+                  :content => third }
               ]
             }
           ]
@@ -179,11 +221,14 @@ describe Precedent do
 
   context 'inline elements' do
     it 'parses smallcaps' do
-      Precedent.parse("  #{first} <<#{second}>> #{third}").should == [
+      Precedent.parse(
+        "  #{first} <<#{second}>> #{third}"
+      ).should == [
         { :type => :indented,
           :content => [
             first + ' ',
-            { :type => :smallcaps, :content => second },
+            { :type => :smallcaps,
+              :content => second },
             ' ' + third
           ]
         }
@@ -191,11 +236,14 @@ describe Precedent do
     end
 
     it 'parses emphasis' do
-      Precedent.parse("  #{first} //#{second}// #{third}").should == [
+      Precedent.parse(
+        "  #{first} //#{second}// #{third}"
+      ).should == [
         { :type => :indented,
           :content => [
             first + ' ',
-            { :type => :emphasis, :content => second },
+            { :type => :emphasis,
+              :content => second },
             ' ' + third
           ]
         }
@@ -203,11 +251,14 @@ describe Precedent do
     end
 
     it 'parses citations' do
-      Precedent.parse("  #{first} {{#{second}}} #{third}").should == [
+      Precedent.parse(
+        "  #{first} {{#{second}}} #{third}"
+      ).should == [
         { :type => :indented,
           :content => [
             first + ' ',
-            { :type => :citation, :content => second },
+            { :type => :citation,
+              :content => second },
             ' ' + third
           ]
         }
@@ -216,7 +267,9 @@ describe Precedent do
 
     it 'parses page breaks' do
       number = (1 + rand(1000)).to_s
-      Precedent.parse("  #{first}@@#{number}@@#{second}").should == [
+      Precedent.parse(
+        "  #{first}@@#{number}@@#{second}"
+      ).should == [
         { :type => :indented,
           :content => [
             first, { :type => :break, :page => number.to_i }, second
@@ -227,10 +280,15 @@ describe Precedent do
 
     it 'parses footnote references' do
       [(1 + rand(100)).to_s, '*', "\u2020", "\u2021"].each do |marker|
-        Precedent.parse("  #{first}[[#{marker}]]#{second}").should == [
+        Precedent.parse(
+          "  #{first}[[#{marker}]]#{second}"
+        ).should == [
           { :type => :indented,
             :content => [
-              first, { :type => :reference, :marker => marker }, second
+              first,
+              { :type => :reference,
+                :marker => marker },
+              second
             ]
           }
         ]
@@ -240,15 +298,19 @@ describe Precedent do
     context 'inlines within inlines' do
       it 'parses formatting within citations' do
         page = (1 + rand(1000)).to_s
-        Precedent.parse("{{//#{word}// @@#{page}@@<<#{another_word}>>}}").should == [
+        Precedent.parse(
+          "{{//#{word}// @@#{page}@@<<#{another_word}>>}}"
+        ).should == [
           { :type => :flush,
             :content => {
               :type => :citation,
               :content => [
-                { :type => :emphasis, :content => word },
+                { :type => :emphasis,
+                  :content => word },
                 ' ',
                 { :type => :break, :page => page.to_i },
-                { :type => :smallcaps, :content => another_word }
+                { :type => :smallcaps,
+                  :content => another_word }
               ]
             }
           }

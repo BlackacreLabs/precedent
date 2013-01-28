@@ -22,7 +22,11 @@ module Precedent
 
     rule comment
       "%" content:[^\n]+
-      { def build ; { :type => :comment, :content => content.text_value } ; end }
+      {
+        def build
+          { :type => :comment, :content => content.text_value }
+        end
+      }
     end
 
     rule blank_lines

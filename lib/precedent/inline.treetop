@@ -5,7 +5,8 @@ module Precedent
       subsequent:(single_newline? inline_element)*
       {
         def build
-          ret = subsequent.elements.map(&:build).flatten.reduce([first.build]) do |mem, e|
+          elems = subsequent.elements.map(&:build).flatten
+          ret = elems.reduce([first.build]) do |mem, e|
             last = mem.last
             if e.nil?
               mem
@@ -21,44 +22,85 @@ module Precedent
     end
 
     rule inline_element
-      word / space / emphasis / smallcaps / citation / page_break / reference
+      word /
+      space /
+      emphasis /
+      smallcaps /
+      citation /
+      page_break /
+      reference
     end
 
     rule smallcaps
       '<<' content:inline '>>'
-      { def build ; { :type => :smallcaps, :content => content.build } ; end }
+      {
+        def build
+          { :type => :smallcaps, :content => content.build }
+        end
+      }
     end
 
     rule emphasis
       '//' content:inline '//'
-      { def build ; { :type => :emphasis, :content => content.build } ; end }
+      {
+        def build
+          { :type => :emphasis, :content => content.build }
+        end
+      }
     end
 
     rule citation
       '{{' content:inline '}}'
-      { def build ; { :type => :citation, :content => content.build } ; end }
+      {
+        def build
+          { :type => :citation, :content => content.build }
+        end
+      }
     end
 
     rule page_break
       '@@' page:[0-9]+ '@@'
-      { def build ; { :type => :break, :page => page.text_value.to_i } ; end }
+      {
+        def build
+          { :type => :break, :page => page.text_value.to_i }
+        end
+      }
     end
 
     rule reference
       '[[' marker:[0-9*†‡]+ ']]'
-      { def build ; { :type => :reference, :marker => marker.text_value } ; end }
+      {
+        def build
+          { :type => :reference, :marker => marker.text_value }
+        end
+      }
     end
 
     rule single_newline
-      "\n" { def build ; ' ' ; end }
+      "\n"
+      {
+        def build
+          ' '
+        end
+      }
     end
 
     rule word
-      [a-zA-Z.]+ { def build ; text_value ; end }
+      [a-zA-Z.]+
+      {
+        def build
+          text_value
+        end
+      }
     end
 
     rule space
-      ' ' { def build ; ' ' ; end }
+      ' '
+      {
+        def build
+          ' '
+        end 
+      }
     end
   end
 end

@@ -54,7 +54,10 @@ module Precedent
         # hash with content
         if content[:content]
           content.merge({
-            :content => replace_references(content[:content], footnotes)
+            :content => replace_references(
+              content[:content],
+              footnotes
+            )
           })
         # e.g. horizontal rules
         else
