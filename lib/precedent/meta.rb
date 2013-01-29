@@ -113,7 +113,7 @@ module Precedent
 
     module Property2
       def build
-        return { key.text_value.to_sym => interpreted_value }
+        return { key.text_value.downcase.to_sym => interpreted_value }
       end
 
       def interpreted_value

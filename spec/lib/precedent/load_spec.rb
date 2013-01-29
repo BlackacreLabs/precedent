@@ -31,8 +31,8 @@ describe Precedent do
 #{third}
     eos
       Precedent.load(input)[:meta].should == {
-        word.capitalize.to_sym => first,
-        another_word.capitalize.to_sym => second
+        word.to_sym => first,
+        another_word.to_sym => second
       }
     end
 
@@ -45,8 +45,8 @@ describe Precedent do
 #{another_word.capitalize}: #{second}
     eos
       Precedent.load(input)[:meta].should == {
-        word.capitalize.to_sym => first,
-        another_word.capitalize.to_sym => second
+        word.to_sym => first,
+        another_word.to_sym => second
       }
     end
   end
@@ -89,7 +89,7 @@ Style: Board of Education v. Tom F.
 @@1@@193 Fed. Appx. 26, affirmed by an equally divided Court.
         eos
       ).should == {
-        :meta => { :Style => 'Board of Education v. Tom F.', },
+        :meta => { :style => 'Board of Education v. Tom F.', },
         :content => [
           { :type => :flush,
             :content => [

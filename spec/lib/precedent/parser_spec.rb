@@ -152,8 +152,8 @@ describe Precedent do
         ).should == [
           { :type => :meta,
             :content => {
-              word.capitalize.to_sym => first,
-              another_word.capitalize.to_sym => second
+              word.to_sym => first,
+              another_word.to_sym => second
             }
           },
           {:type => :flush,
@@ -177,10 +177,10 @@ describe Precedent do
             ).should == [
                 { :type => :meta,
                   :content => {
-                    word.capitalize.to_sym => num.to_i,
-                    another_word.capitalize.to_sym => date,
-                    (word.capitalize + another_word).to_sym => true,
-                    (another_word.capitalize + word).to_sym => false
+                    word.to_sym => num.to_i,
+                    another_word.to_sym => date,
+                    (word + another_word).to_sym => true,
+                    (another_word + word).to_sym => false
                   }
                 },
                 {:type => :flush,
