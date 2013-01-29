@@ -348,84 +348,95 @@ module Precedent
           if r5
             r2 = r5
           else
-            if has_terminal?('†', false, index)
-              r6 = instantiate_node(SyntaxNode,input, index...(index + 1))
-              @index += 1
+            if has_terminal?('††', false, index)
+              r6 = instantiate_node(SyntaxNode,input, index...(index + 2))
+              @index += 2
             else
-              terminal_parse_failure('†')
+              terminal_parse_failure('††')
               r6 = nil
             end
             if r6
               r2 = r6
             else
-              if has_terminal?('‡', false, index)
+              if has_terminal?('†', false, index)
                 r7 = instantiate_node(SyntaxNode,input, index...(index + 1))
                 @index += 1
               else
-                terminal_parse_failure('‡')
+                terminal_parse_failure('†')
                 r7 = nil
               end
               if r7
                 r2 = r7
               else
-                @index = i2
-                r2 = nil
+                if has_terminal?('‡', false, index)
+                  r8 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                  @index += 1
+                else
+                  terminal_parse_failure('‡')
+                  r8 = nil
+                end
+                if r8
+                  r2 = r8
+                else
+                  @index = i2
+                  r2 = nil
+                end
               end
             end
           end
         end
         s0 << r2
         if r2
-          s8, i8 = [], index
+          s9, i9 = [], index
           loop do
             if has_terminal?(' ', false, index)
-              r9 = instantiate_node(SyntaxNode,input, index...(index + 1))
+              r10 = instantiate_node(SyntaxNode,input, index...(index + 1))
               @index += 1
             else
               terminal_parse_failure(' ')
-              r9 = nil
+              r10 = nil
             end
-            if r9
-              s8 << r9
+            if r10
+              s9 << r10
             else
               break
             end
           end
-          if s8.empty?
-            @index = i8
-            r8 = nil
+          if s9.empty?
+            @index = i9
+            r9 = nil
           else
-            r8 = instantiate_node(SyntaxNode,input, i8...index, s8)
+            r9 = instantiate_node(SyntaxNode,input, i9...index, s9)
           end
-          s0 << r8
-          if r8
-            r10 = _nt_inline
-            s0 << r10
-            if r10
-              s11, i11 = [], index
+          s0 << r9
+          if r9
+            r11 = _nt_inline
+            s0 << r11
+            if r11
+              s12, i12 = [], index
               loop do
-                i12, s12 = index, []
-                r13 = _nt_block_end
-                s12 << r13
-                if r13
-                  r14 = _nt_footnote_par
-                  s12 << r14
+                i13, s13 = index, []
+                r14 = _nt_block_end
+                s13 << r14
+                if r14
+                  r15 = _nt_footnote_par
+                  s13 << r15
                 end
-                if s12.last
-                  r12 = instantiate_node(SyntaxNode,input, i12...index, s12)
-                  r12.extend(Footnote0)
+                if s13.last
+                  r13 = instantiate_node(SyntaxNode,input, i13...index, s13)
+                  r13.extend(Footnote0)
                 else
-                  @index = i12
-                  r12 = nil
+                  @index = i13
+                  r13 = nil
                 end
-                if r12
-                  s11 << r12
+                if r13
+                  s12 << r13
                 else
                   break
                 end
               end
-              r11 = instantiate_node(SyntaxNode,input, i11...index, s11)
-              s0 << r11
+              r12 = instantiate_node(SyntaxNode,input, i12...index, s12)
+              s0 << r12
             end
           end
         end

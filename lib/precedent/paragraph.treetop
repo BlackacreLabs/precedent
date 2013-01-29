@@ -57,7 +57,7 @@ module Precedent
 
     rule footnote
       '^'
-	  marker:([0-9]+ / '*' / '†' / '‡')
+	  marker:([0-9]+ / '*' / '††' / '†' / '‡')
 	  ' '+
 	  first_content:inline
 	  additional:(block_end footnote_par)*
@@ -88,7 +88,10 @@ module Precedent
 
     rule quote
 	  first:(indented_rule / indented_quote / flush_quote)
-      additional:(block_end elem:(indented_rule / indented_quote / flush_quote))*
+      additional:(
+        block_end
+        elem:(indented_rule / indented_quote / flush_quote)
+      )*
       {
         def build
           {

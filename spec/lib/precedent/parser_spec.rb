@@ -195,7 +195,7 @@ describe Precedent do
       it "parses footnotes" do
         [
           (1 + rand(100)).to_s,
-          '*', "\u2020", "\u2021"
+          '*', "\u2020\u2020", "\u2020", "\u2021"
         ].each do |marker|
           Precedent.parse(<<-eos
 ^#{marker} #{first}
@@ -294,7 +294,10 @@ describe Precedent do
     end
 
     it 'parses footnote references' do
-      [(1 + rand(100)).to_s, '*', "\u2020", "\u2021"].each do |marker|
+      [
+        (1 + rand(100)).to_s,
+        '*', "\u2020\u2020", "\u2020", "\u2021"
+      ].each do |marker|
         Precedent.parse(
           "#{first}[[#{marker}]]#{second}"
         ).should == [
