@@ -140,4 +140,16 @@ Another paragraph.
       ]
     end
   end
+
+  it "raises an error for missing footnote content" do
+    expect {
+      Precedent.load(
+        <<-eos
+Reference footnoite one.[[1]]
+
+^2 Define footnote two.
+        eos
+      )
+    }.to raise_error(Precedent::MissingFootnoteError)
+  end
 end

@@ -53,6 +53,9 @@ module Precedent
       if content[:type] == :reference
         marker = content[:marker]
         footnote_content = footnotes[marker]
+        if footnote_content.nil?
+          raise MissingFootnoteError.new("Missing footnote #{marker}")
+        end
         if footnote_content.count == 1
           footnote_content = footnote_content.first
         end
@@ -76,5 +79,8 @@ module Precedent
         end
       end
     end
+  end
+
+  class MissingFootnoteError < Exception
   end
 end
