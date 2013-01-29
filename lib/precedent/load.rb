@@ -52,12 +52,14 @@ module Precedent
       # Replacement happens here
       if content[:type] == :reference
         marker = content[:marker]
-        content = footnotes[marker]
-        content = content.first if content.count == 1
+        footnote_content = footnotes[marker]
+        if footnote_content.count == 1
+          footnote_content = footnote_content.first
+        end
         { 
           :type => :footnote,
           :marker => marker,
-          :content => content
+          :content => footnote_content
         }
       else
         # hash with content
