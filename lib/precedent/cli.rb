@@ -30,5 +30,25 @@ module Precedent
       require_relative 'load'
       STDOUT.write(JSON::pretty_generate(Precedent.load(input)))
     end
+
+    desc "syntax", "Check markup syntax"
+    def syntax()
+      if options[:file]
+        input = open(options[:file], 'r').read
+      else
+        input = STDIN.read
+      end
+      require_relative 'load'
+      begin
+        Precedent.load(input)
+        puts "Syntax OK"
+      rescue Exception => e
+        if options[:file]
+          STDERR.write options[:file] + ': '
+        end
+        STDERR.puts e.to_s
+        exit 1
+      end
+    end
   end
 end
