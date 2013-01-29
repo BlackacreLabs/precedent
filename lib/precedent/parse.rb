@@ -1,14 +1,17 @@
-require 'treetop'
+require 'treetop/runtime'
+# Syntax Nodes
 require_relative 'nodes'
 require_relative 'node_patch'
+# Generated Grammars
+require_relative 'inline.rb'
+require_relative 'paragraph.rb'
+require_relative 'heading.rb'
+require_relative 'meta.rb'
+require_relative 'document.rb'
 
 module Precedent
   # Keep a single module-level instance of the generated parser.
-  @@parser = Treetop.load(
-    File.join(
-      File.dirname(__FILE__), 'document.treetop'
-    )
-  ).new
+  @@parser = DocumentParser.new
 
   # Programmatic interface to the Treetop-generated parsers.
   #

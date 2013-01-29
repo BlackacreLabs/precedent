@@ -1,7 +1,3 @@
-require File.dirname(__FILE__) + '/paragraph'
-require File.dirname(__FILE__) + '/heading'
-require File.dirname(__FILE__) + '/meta'
-
 module Precedent
   grammar Document
     include Paragraph
