@@ -16,6 +16,7 @@ module Precedent
 .smallcaps { font-variant: small-caps; }
 p { text-indent: 3ex; }
 .flush { text-indent: 0ex; }
+cite { font-style: normal; color: #777; }
     </stle>
   </head>
   <body></body>
