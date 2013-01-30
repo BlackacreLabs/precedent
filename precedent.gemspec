@@ -35,7 +35,6 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'faker'
   gem.add_development_dependency 'guard-bundler'
   gem.add_development_dependency 'guard-rspec'
-  # guard-rspec does not play nice with later versions of rb-inotify
-  gem.add_development_dependency 'rb-inotify', "0.8.8"
+  gem.add_development_dependency 'guard-treetop'
   gem.add_development_dependency 'rspec', "~>2.12.0"
 end
