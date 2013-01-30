@@ -29,6 +29,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency "nokogiri", "~>1.5.6"
   gem.add_dependency "thor", "~>0.16.0"
   gem.add_dependency "treetop", "~>1.4.12"
+  gem.add_dependency "xml-simple", "~>1.1.2"
 
   gem.add_development_dependency 'awesome_print'
   gem.add_development_dependency 'faker'

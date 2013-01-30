@@ -36,6 +36,20 @@ module Precedent
       STDOUT.write(Precedent.load(input).to_yaml)
     end
 
+    desc "xml [FILE]", "Translate Precedent markup into XML"
+    def xml(file=STDIN)
+      input = file.is_a?(String) ? File.read(file) : file.read
+      require_relative 'load'
+      require 'xmlsimple'
+      STDOUT.write(
+        XmlSimple.xml_out(
+          Precedent.load(input),
+          # TODO: Better XmlSimple configuration
+          :RootName => 'document'
+        )
+      )
+    end
+
     desc "syntax [FILE]", "Check markup syntax"
     def syntax(file=STDIN)
       input = file.is_a?(String) ? File.read(file) : file.read
