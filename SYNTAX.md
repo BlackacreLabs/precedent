@@ -124,6 +124,8 @@ Argued: 2012-12-04
 Decided: 2013-01-22
 ```
 
+Metadata must appear at the top of a document, before any content text.
+
 ### Special Metadata Types
 
 Content composed only of digits will be interpreted as an integer
