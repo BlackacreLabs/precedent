@@ -5,13 +5,24 @@ module Precedent
     include Meta
 
     rule root
-      block_end? content:block+
+      block_end? meta:meta? content:block+
+      {
+        def build
+          c = content.build
+          m = meta.build
+          if m
+            [m] + c
+          else
+            c
+          end
+        end
+      }
     end
 
     rule block
       # Note the use of the content label in reliance upon the generic
       # #build() implementation in node_patch.rb.
-      content:(comment / meta / heading / paragraph) block_end
+      content:(comment / heading / paragraph) block_end
     end
 
     rule block_end

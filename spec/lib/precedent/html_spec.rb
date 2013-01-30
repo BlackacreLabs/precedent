@@ -11,9 +11,9 @@ describe Precedent do
 
   it 'outputs a basic document skeleton' do
     result = Precedent.to_html(<<-eos
-# #{word}
-
 #{word.capitalize}: #{another_word}
+
+# #{word}
 
   #{first}
     eos

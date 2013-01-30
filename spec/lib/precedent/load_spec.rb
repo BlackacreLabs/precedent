@@ -35,20 +35,6 @@ describe Precedent do
         another_word.to_sym => second
       }
     end
-
-    it "from multiple meta elements" do
-      input = <<-eos
-#{word.capitalize}: #{first}
-
-#{third}
-
-#{another_word.capitalize}: #{second}
-    eos
-      Precedent.load(input)[:meta].should == {
-        word.to_sym => first,
-        another_word.to_sym => second
-      }
-    end
   end
 
   context 'injects footnotes' do
@@ -151,5 +137,14 @@ Reference footnoite one.[[1]]
         eos
       )
     }.to raise_error(Precedent::MissingFootnoteError)
+  end
+      
+  it "requires metadata appear at the beginning" do
+    Precedent.load(<<-eos
+#{first}
+
+#{word.capitalize}: #{second}
+    eos
+    )[:meta].should == {}
   end
 end
