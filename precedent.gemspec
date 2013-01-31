@@ -4,10 +4,10 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'precedent/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = "precedent"
+  gem.name          = 'precedent'
   gem.version       = Precedent::VERSION
-  gem.authors       = ["Kyle Mitchell"]
-  gem.email         = ["kyle@blackacrelabs.org"]
+  gem.authors       = ['Kyle Mitchell']
+  gem.email         = ['kyle@blackacrelabs.org']
   gem.description   = <<-eof
     Precedent is a lightweight markup language for legal documents
     heavily inspired by Markdown, LaTeX, and the print style of the
@@ -15,7 +15,7 @@ Gem::Specification.new do |gem|
     United States Supreme Court.
   eof
   gem.summary       = %q{Markdown-esque markup for legal documents}
-  gem.homepage      = "https://github.com/BlackacreLabs/precedent"
+  gem.homepage      = 'https://github.com/BlackacreLabs/precedent'
   gem.license       = 'MIT'
 
   gem.files         = `git ls-files`.split($/)
@@ -23,18 +23,20 @@ Gem::Specification.new do |gem|
     |f| File.basename(f)
   }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.require_paths = ["lib"]
+  gem.require_paths = ['lib']
 
-  gem.add_dependency "active_support", "~>3.0.0"
-  gem.add_dependency "nokogiri", "~>1.5.6"
-  gem.add_dependency "thor", "~>0.16.0"
-  gem.add_dependency "treetop", "~>1.4.12"
-  gem.add_dependency "xml-simple", "~>1.1.2"
+  gem.required_ruby_version = '~>1.9'
+
+  gem.add_dependency 'activesupport'
+  gem.add_dependency 'nokogiri', '~>1.5.0'
+  gem.add_dependency 'thor', '~>0.16.0'
+  gem.add_dependency 'treetop', '~>1.4.12'
+  gem.add_dependency 'xml-simple', '~>1.1.2'
 
   gem.add_development_dependency 'awesome_print'
   gem.add_development_dependency 'faker'
   gem.add_development_dependency 'guard-bundler'
   gem.add_development_dependency 'guard-rspec'
   gem.add_development_dependency 'guard-treetop'
-  gem.add_development_dependency 'rspec', "~>2.12.0"
+  gem.add_development_dependency 'rspec', '~>2.12.0'
 end
