@@ -95,8 +95,8 @@ cite { font-style: normal; color: #777; }
   end
 
   SIMPLE_NODES = {
-    :flush => %w{p flush},
-    :indented => 'p',
+    :flush => ['p', 'numbered flush'],
+    :indented => ['p', 'numbered'],
     :quote => 'blockquote',
     :citation => 'cite',
     :ragged_left => %w{p raggedleft},

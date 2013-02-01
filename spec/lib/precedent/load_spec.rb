@@ -1,7 +1,6 @@
 # encoding: utf-8
 require_relative '../../../lib/precedent/load'
 require 'faker'
-include Precedent
 
 describe Precedent do
   let(:first) { Faker::Lorem.sentence }
@@ -18,7 +17,7 @@ describe Precedent do
 #{third}
     eos
     Precedent.load(input)[:content].should == [{
-      :type => :flush, :content => third
+      :type => :flush, :number => 1, :content => third, :number => 1
     }]
   end
 
@@ -50,6 +49,7 @@ describe Precedent do
         :meta => {},
         :content => [
           { :type => :indented,
+            :number => 1,
             :content => [
               first,
               { :type => :footnote,
@@ -78,6 +78,7 @@ Style: Board of Education v. Tom F.
         :meta => { :style => 'Board of Education v. Tom F.', },
         :content => [
           { :type => :flush,
+            :number => 1,
             :content => [
               { :type => :break, :page => 1 },
               "193 Fed. Appx. 26, affirmed by an equally divided Court."
@@ -96,6 +97,7 @@ Another paragraph.[[*]]
         eos
       )[:content].should == [
         { :type => :flush,
+          :number => 1,
           :content => [
             "Another paragraph.",
             { :type => :footnote,
@@ -120,8 +122,11 @@ Another paragraph.
       )[:content].should == [
         { :type => :quote,
           :content => [
-            { :type => :flush, :content => "Quote paragraph." } ] },
+            { :type => :flush,
+              :number => 1,
+              :content => "Quote paragraph." } ] },
         { :type => :flush,
+          :number => 2,
           :content => 'Another paragraph.' }
       ]
     end
@@ -146,5 +151,55 @@ Reference footnoite one.[[1]]
 #{word.capitalize}: #{second}
     eos
     )[:meta].should == {}
+  end
+
+  context 'numbering' do
+    it "works with block quotations" do
+      Precedent.load(<<-eos
+  #{first}
+
+      #{second}
+
+    #{third}
+
+#{word}
+      eos
+      )[:content].should == [
+        { :type => :indented, :number => 1, :content => first },
+        { :type => :quote,
+          :content => [
+            { :type => :indented, :number => 2, :content => second },
+            { :type => :flush, :number => 3, :content => third }
+          ]
+        },
+        { :type => :flush, :number => 4, :content => word },
+      ]
+    end
+
+    specify {
+      Precedent.numbered([
+        { :type => :flush, :content => first },
+        { :type => :flush, :content => second }
+      ]).first.should == [
+        { :type => :flush, :number => 1, :content => first },
+        { :type => :flush, :number => 2, :content => second }
+      ]
+    }
+
+    specify {
+      Precedent.numbered({
+        :type => :quote,
+        :content => [
+          { :type => :flush, :content => first },
+          { :type => :flush, :content => second }
+        ]
+      }).first.should == {
+        :type => :quote,
+        :content => [
+          { :type => :flush, :number => 1, :content => first },
+          { :type => :flush, :number => 2, :content => second }
+        ]
+      }
+    }
   end
 end

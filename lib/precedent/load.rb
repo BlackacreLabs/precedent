@@ -12,7 +12,7 @@ module Precedent
   # than at the end of output (e.g. HTML).
   def self.load(source)
     blank = { :meta => {}, :content => [], :footnotes => {} }
-    inject_footnotes(parse(source).reduce(blank) do |mem, e|
+    injected = inject_footnotes(parse(source).reduce(blank) do |mem, e|
       case e[:type]
       when :meta
         mem.merge({ :meta => mem[:meta].merge(e[:content]) })
@@ -23,9 +23,28 @@ module Precedent
         mem.merge({ :content => mem[:content] + [e] })
       end
     end)
+    injected.merge(content: numbered(injected[:content], 1).first)
   end
 
-  private
+  NUMBERED_TYPES = [:indented, :flush, :raggedleft]
+  def self.numbered(node, start=1)
+    if node.is_a?(Array)
+      mapped = node.map {|n| ret, start = numbered(n, start) ; ret }
+      [mapped, start]
+    elsif node.is_a?(Hash) && node[:content]
+      if NUMBERED_TYPES.include?(node[:type])
+        [node.merge(number: start), start + 1]
+      elsif node[:type] == :quote
+        new_content, start = numbered(node[:content], start)
+        [node.merge(content: new_content), start]
+      else
+        puts node
+        [node, start]
+      end
+    else
+      [node, start]
+    end
+  end
 
   # Replace reference hashes in ast[:content] with footnotes containing
   # the content in ast[:footnotes] for the corresponding marker
