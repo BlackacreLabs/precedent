@@ -64,24 +64,24 @@ cite { font-style: normal; color: #777; }
     fragment
   end
 
-  def self.render_element(fragment, element, in_footnotes, anchor_prefix)
+  def self.render_element(fragment, element, in_footnotes, a_prefix)
     case element
     when Hash
-      node = render_node(fragment, element, in_footnotes, anchor_prefix)
+      node = render_node(fragment, element, in_footnotes, a_prefix)
       content = element[:content]
       if content && element[:type] != :footnote
         if content.is_a?(Array)
           content.each do |child|
             node.add_child(
               render_element(
-                fragment, child, in_footnotes, anchor_prefix
+                fragment, child, in_footnotes, a_prefix
               )
             )
           end
         else
           node.add_child(
             render_element(
-              fragment, content, in_footnotes, anchor_prefix
+              fragment, content, in_footnotes, a_prefix
             )
           )
         end
@@ -99,11 +99,8 @@ cite { font-style: normal; color: #777; }
   end
 
   SIMPLE_NODES = {
-    :flush => ['p', 'numbered flush'],
-    :indented => ['p', 'numbered'],
     :quote => 'blockquote',
     :citation => 'cite',
-    :ragged_left => %w{p raggedleft},
     :emphasis => 'em',
     :smallcaps => %w{span smallcaps},
     :rule => 'hr'
@@ -116,6 +113,21 @@ cite { font-style: normal; color: #777; }
       simple_node(fragment, mapping)
     else
       case element[:type]
+      when :flush
+        node = Nokogiri::XML::Node.new('p', fragment)
+        node['class'] = 'numbered flush'
+        node['data-number'] = element[:number]
+        node
+      when :indented
+        node = Nokogiri::XML::Node.new('p', fragment)
+        node['class'] = 'numbered'
+        node['data-number'] = element[:number]
+        node
+      when :ragged_left
+        node = Nokogiri::XML::Node.new('p', fragment)
+        node['class'] = 'numbered raggedleft'
+        node['data-number'] = element[:number]
+        node
       when :heading
         node = Nokogiri::XML::Node.new("h#{element[:level]}", fragment)
       when :footnote

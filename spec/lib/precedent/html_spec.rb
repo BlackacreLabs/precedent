@@ -22,7 +22,9 @@ describe Precedent do
     result.should match(
       %r{<article.+data-#{word.downcase}="#{another_word}"}
     )
-    result.should include("<p class=\"numbered\">#{first}</p>")
+    result.should include(
+      "<p class=\"numbered\" data-number=\"1\">#{first}</p>"
+    )
   end
 
   specify do
@@ -42,8 +44,12 @@ describe Precedent do
     eos
     )
     result.should include("<blockquote>")
-    result.should include("<p class=\"numbered\">#{first}</p>")
-    result.should include("<p class=\"numbered flush\">#{second}</p>")
+    result.should include(
+      "<p class=\"numbered\" data-number=\"1\">#{first}</p>"
+    )
+    result.should include(
+      "<p class=\"numbered flush\" data-number=\"2\">#{second}</p>"
+    )
   end
 
   specify do
