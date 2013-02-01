@@ -1,10 +1,9 @@
-require_relative 'parse'
+require_relative 'load'
 require 'nokogiri'
 
 module Precedent
-  public
   def self.to_html(input, standalone=true)
-    htmlify(parse(input), standalone)
+    htmlify(Precedent.load(input), standalone)
   end
 
   HTML5_SKELETON = <<-eos
@@ -19,137 +18,158 @@ p { text-indent: 3ex; }
 cite { font-style: normal; color: #777; }
     </stle>
   </head>
-  <body></body>
+  <body>
+    <article></article>
+  </body>
 </html>
   eos
 
-  private
-  def self.htmlify(doc, standalone=true)
-    footnotes, rest = doc.partition { |e| e[:type] == :footnote }
-    metas, content = rest.partition { |e| e[:type] == :meta }
+  def self.htmlify(ast, standalone, anchor_prefix='')
+    content = ast[:content]
+    fragment = Nokogiri::HTML::DocumentFragment.parse ""
 
-    # parse as XML to avoid HTML formatting
-    if standalone
-      root = Nokogiri.XML(HTML5_SKELETON, &:noblanks)
-    else
-      root = Nokogiri::HTML::DocumentFragment.parse("")
+    content.each do |element|
+      fragment.add_child(
+        render_element(fragment, element, false, anchor_prefix)
+      )
     end
-    article = Nokogiri::XML::Node.new("article", root)
 
-    add_meta(metas, article)
-    add_nodes(content, article)
-    add_footnotes(footnotes, article) unless footnotes.empty?
+    footnotes = find_footnotes(content)
+    unless footnotes.empty?
+      section = Nokogiri::XML::Node.new('section', fragment)
+      section['class'] = 'footnotes'
+      footnotes.each do |e|
+        section.add_child(
+          render_element(section, e, true, anchor_prefix)
+        )
+      end
+      fragment.add_child(section)
+    end
 
     if standalone
-      # format the root to avoid <?xml> in output
-      body = root.at_css('body')
-      body.add_child(article)
+      # parse as XML to avoid HTML formatting
+      root = Nokogiri.XML(HTML5_SKELETON, &:noblanks)
+      article = root.at_css('article')
+      ast[:meta].each do |k, v|
+        article["data-#{k}"] = v.to_s
+      end
+      article.add_child(fragment)
       "<!doctype html>\n#{root.root.to_xml(indent: 2)}"
     else
-      root.add_child(article)
-      root.to_xml(indent: 2)
+      fragment.to_xml(indent: 2)
     end
   end
 
-  def self.add_meta(metas, parent)
-    metas.map {|m| m[:content] }.each do |hash|
-      hash.each do |key, value|
-        parent["data-#{key.downcase}"] = value
-      end
-    end
-  end
-
-  def self.simple_node(mapping, content, parent)
-    name, css_class = mapping
-    node = Nokogiri::XML::Node.new(name, parent)
-    node['class'] = css_class if css_class
-    add_nodes(content[:content], node)
-    parent.add_child(node)
-  end
-
-  NODE_MAPPING = {
-    :indented => 'p',
-    :flush => ['p', 'flush'],
-    :smallcaps => ['span', 'smallcaps'],
-    :citation => 'cite',
-    :emphasis => 'em',
-    :quote => 'blockquote'
-  }
-
-  def self.add_nodes(content, parent)
-    case content
-    when Array
-      content.each {|e| add_nodes(e, parent) }
+  def self.render_element(fragment, element, in_footnotes, anchor_prefix)
+    case element
     when Hash
-      if (mapping = NODE_MAPPING[content[:type]])
-        simple_node(mapping, content, parent)
-      else
-        case content[:type]
-        when :heading
-          simple_node("h#{content[:level]}", content, parent)
-        when :rule
-          parent.add_child(Nokogiri::XML::Node.new("hr", parent))
-        when :reference
-          marker = content[:marker]
-          sup = Nokogiri::XML::Node.new("sup", parent)
-          a = Nokogiri::XML::Node.new("a", sup)
-          a['id'] = "reference-#{marker}" 
-          a['class'] = "reference"
-          a['href'] = "#footnote-#{marker}"
-          a.inner_html = marker
-          sup.add_child(a)
-          parent.add_child(sup)
-        when :break
-          page = content[:page]
-          a = Nokogiri::XML::Node.new('a', parent)
-          a['class'] = 'break'
-          a['data-page'] = page.to_s
-          add_nodes(page.to_s, a)
-          parent.add_child(a)
-        when :footnote
-          marker = content[:marker]
-          aside = Nokogiri::XML::Node.new('aside', parent)
-          aside['id'] = "footnote-#{marker}"
-          children = content[:content]
-          first = children.first
-          backref = {
-            :type => :back_reference, 
-            :marker => marker
-          }
-          # Append a back reference to the first paragraph, then send it
-          # down with the hash content to be appended to the <aside>.
-          if first[:content].is_a?(Array)
-            first[:content].unshift(backref)
-          else
-            first[:content] = [backref, first[:content]]
+      node = render_node(fragment, element, in_footnotes, anchor_prefix)
+      content = element[:content]
+      if content && element[:type] != :footnote
+        if content.is_a?(Array)
+          content.each do |child|
+            node.add_child(
+              render_element(
+                fragment, child, in_footnotes, anchor_prefix
+              )
+            )
           end
-          add_nodes(children, aside)
-          parent.add_child(aside)
-        # created under :footnote above
-        when :back_reference
-          marker = content[:marker]
-          sup = Nokogiri::XML::Node.new("sup", parent)
-          a = Nokogiri::XML::Node.new("a", sup)
-          a['class'] = "back-reference"
-          a['href'] = "#reference-#{marker}"
-          a.inner_html = marker
-          sup.add_child(a)
-          parent.add_child(sup)
-          # insert space between back reference and paragraph text
-          parent.add_child(Nokogiri::XML::Text.new(' ', parent))
+        else
+          node.add_child(
+            render_element(
+              fragment, content, in_footnotes, anchor_prefix
+            )
+          )
         end
       end
+      return node
     when String
-      parent.add_child Nokogiri::XML::Text.new(content, parent)
-    else
-      raise "Unexpected element: #{content}"
+      Nokogiri::XML::Text.new(element, fragment)
     end
   end
 
-  def self.add_footnotes(footnotes, parent)
-    section = Nokogiri::XML::Node.new('section', parent)
-    section['class'] = "footnotes"
-    add_nodes(footnotes, section)
-    parent.add_child(section)
+  def self.simple_node(parent, (name, css_class))
+    node = Nokogiri::XML::Node.new(name, parent)
+    node['class'] = css_class if css_class
+    node
   end
+
+  SIMPLE_NODES = {
+    :flush => %w{p flush},
+    :indented => 'p',
+    :quote => 'blockquote',
+    :citation => 'cite',
+    :ragged_left => %w{p raggedleft},
+    :emphasis => 'em',
+    :smallcaps => %w{span smallcaps},
+    :rule => 'hr'
+  }
+
+  def self.render_node(fragment, element, in_footnotes, anchor_prefix)
+    content = element[:content]
+    content = [content] unless content.is_a?(Array)
+    if mapping = SIMPLE_NODES[element[:type]]
+      simple_node(fragment, mapping)
+    else
+      case element[:type]
+      when :heading
+        node = Nokogiri::XML::Node.new("h#{element[:level]}", fragment)
+      when :footnote
+        node = Nokogiri::XML::Node.new('sup', fragment)
+        a = Nokogiri::XML::Node.new('a', node)
+        node['class'] = 'reference'
+        marker = element[:marker]
+        a['id'] = "#{anchor_prefix}reference-#{marker}"
+        a['href'] = "##{anchor_prefix}footnote-#{marker}"
+        a.add_child(
+          Nokogiri::XML::Text.new(marker, fragment)
+        )
+        node.add_child(a)
+      when :backref
+        node = Nokogiri::XML::Node.new('sup', fragment)
+        a = Nokogiri::XML::Node.new('a', node)
+        node['class'] = 'reference'
+        marker = element[:marker]
+        a['href'] = "##{anchor_prefix}reference-#{marker}"
+        a.inner_html = marker
+        node.add_child(a)
+      when :footnote_content
+        node = Nokogiri::XML::Node.new('aside', fragment)
+        marker = element[:marker]
+        node['id'] = "#{anchor_prefix}footnote-#{marker}"
+        backref = { :type => :backref, :marker => marker }
+        unless content.first[:content].is_a?(Array)
+          content.first[:content] = [content.first[:content]]
+        end
+        content.first[:content].unshift(backref)
+      when :break
+        node = Nokogiri::XML::Node.new('a', fragment)
+        node['class'] = 'pageBreak'
+        page = element[:page]
+        node['data-page'] = page
+        unless in_footnotes
+          node['id'] = "#{anchor_prefix}page-#{page}"
+        end
+        node.add_child(
+          Nokogiri::XML::Text.new(page.to_s, fragment)
+        )
+      else
+        raise "Unknown element type: #{element[:type]}"
+      end
+      node
+    end
+  end
+
+  def self.find_footnotes(ast)
+    if ast.is_a?(Array)
+      ast.map{|a| find_footnotes(a)}.flatten.compact
+    elsif ast.is_a?(Hash)
+      if ast[:type] == :footnote
+        ast.merge(:type => :footnote_content)
+      elsif ast[:content]
+        find_footnotes(ast[:content])
+      end
+    end
+  end
+
 end

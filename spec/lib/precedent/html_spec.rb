@@ -54,10 +54,11 @@ describe Precedent do
 ^#{marker} #{third}
     eos
     )
-    result.should match(/<sup><a.+id=\"reference-#{marker}/)
+    result.should match(
+      /<sup class="reference"><a.+id=\"reference-#{marker}/
+    )
     result.should match(/<section.+class=\"footnotes\">/)
     result.should match(/<aside.+id=\"footnote-#{marker}/)
-    result.should match(/<sup><a.+class=\"back-reference/)
   end
 
   specify do
@@ -86,11 +87,9 @@ describe Precedent do
 
     specify do
       page = (1 + rand(1000)).to_s
-      result = Precedent.to_html(
-        "@@#{page}@@"
-      )
-      result.should match(%r{<a.+class="break"})
-      result.should match(%r{<a.+data-page="#{page}">})
+      result = Precedent.to_html("@@#{page}@@")
+      result.should match(%r{<a.+class="pageBreak"})
+      result.should include("data-page=\"#{page}\"")
       result.should match(%r{>#{page}</a>})
     end
   end
