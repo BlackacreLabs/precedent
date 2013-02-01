@@ -24,7 +24,7 @@ module Precedent
     injected.merge(content: numbered(injected[:content], 1).first)
   end
 
-  NUMBERED_TYPES = [:indented, :flush, :raggedleft]
+  NUMBERED_TYPES = [:indented, :flush, :ragged_left]
 
   def self.numbered(node, start=1)
     if node.is_a?(Array)
