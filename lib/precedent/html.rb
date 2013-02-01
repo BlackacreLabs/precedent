@@ -25,6 +25,22 @@ cite { font-style: normal; color: #777; }
   eos
 
   def self.htmlify(ast, standalone, anchor_prefix='')
+    fragment = to_nokogiri(ast, anchor_prefix)
+    if standalone
+      # parse as XML to avoid HTML formatting
+      root = Nokogiri.XML(HTML5_SKELETON, &:noblanks)
+      article = root.at_css('article')
+      ast[:meta].each do |k, v|
+        article["data-#{k}"] = v.to_s
+      end
+      article.add_child(fragment)
+      "<!doctype html>\n#{root.root.to_xml(indent: 2)}"
+    else
+      fragment.to_xml(indent: 2)
+    end
+  end
+
+  def self.to_nokogiri(ast, anchor_prefix)
     content = ast[:content]
     fragment = Nokogiri::HTML::DocumentFragment.parse ""
 
@@ -45,19 +61,7 @@ cite { font-style: normal; color: #777; }
       end
       fragment.add_child(section)
     end
-
-    if standalone
-      # parse as XML to avoid HTML formatting
-      root = Nokogiri.XML(HTML5_SKELETON, &:noblanks)
-      article = root.at_css('article')
-      ast[:meta].each do |k, v|
-        article["data-#{k}"] = v.to_s
-      end
-      article.add_child(fragment)
-      "<!doctype html>\n#{root.root.to_xml(indent: 2)}"
-    else
-      fragment.to_xml(indent: 2)
-    end
+    fragment
   end
 
   def self.render_element(fragment, element, in_footnotes, anchor_prefix)
