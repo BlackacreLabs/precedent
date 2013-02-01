@@ -94,4 +94,9 @@ describe Precedent do
       result.should match(%r{>#{page}</a>})
     end
   end
+
+  specify {
+    result = Precedent.to_html("#{first}", false)
+    result.should_not match(%r{<!doctype})
+  }
 end

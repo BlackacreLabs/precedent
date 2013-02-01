@@ -3,8 +3,8 @@ require 'nokogiri'
 
 module Precedent
   public
-  def self.to_html(input)
-    htmlify(parse(input))
+  def self.to_html(input, standalone=true)
+    htmlify(parse(input), standalone)
   end
 
   HTML5_SKELETON = <<-eos
@@ -24,21 +24,31 @@ cite { font-style: normal; color: #777; }
   eos
 
   private
-  def self.htmlify(doc)
+  def self.htmlify(doc, standalone=true)
     footnotes, rest = doc.partition { |e| e[:type] == :footnote }
     metas, content = rest.partition { |e| e[:type] == :meta }
 
     # parse as XML to avoid HTML formatting
-    xml = Nokogiri.XML(HTML5_SKELETON, &:noblanks)
-    body = xml.at_css('body')
-    article = Nokogiri::XML::Node.new("article", xml)
-    body.add_child(article)
+    if standalone
+      root = Nokogiri.XML(HTML5_SKELETON, &:noblanks)
+    else
+      root = Nokogiri::HTML::DocumentFragment.parse("")
+    end
+    article = Nokogiri::XML::Node.new("article", root)
 
     add_meta(metas, article)
     add_nodes(content, article)
     add_footnotes(footnotes, article) unless footnotes.empty?
-    # format the root to avoid <?xml> in output
-    "<!doctype html>\n#{xml.root.to_xml(indent: 2)}"
+
+    if standalone
+      # format the root to avoid <?xml> in output
+      body = root.at_css('body')
+      body.add_child(article)
+      "<!doctype html>\n#{root.root.to_xml(indent: 2)}"
+    else
+      root.add_child(article)
+      root.to_xml(indent: 2)
+    end
   end
 
   def self.add_meta(metas, parent)

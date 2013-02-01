@@ -4,9 +4,15 @@ module Precedent
   # Command Line Interface
   class CLI < Thor
     desc "html [FILE]", "Translate Precedent markup into HTML5"
+    method_option :fragment,
+      :aliases => '-f',
+      :desc => 'Output a fragment, not a complete document',
+      :type => :boolean,
+      :default => false
     def html(file=STDIN)
+      input = file.is_a?(String) ? File.read(file) : file.read
       require_relative 'html'
-      STDOUT.write Precedent.to_html(input)
+      STDOUT.write(Precedent.to_html(input, !options[:fragment]))
     end
 
     option :indent,
