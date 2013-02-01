@@ -55,7 +55,7 @@ describe Precedent do
               { :type => :footnote,
                 :marker => marker,
                 :content => {
-                  :type => :indented, :content => third
+                  :type => :indented, :content => third, :number => 1
                 }
               },
               ' ' + second
@@ -104,7 +104,8 @@ Another paragraph.[[*]]
               :marker => '*',
               :content => {
                 :type => :indented,
-                :content => 'A Footnote paragraph.'
+                :content => 'A Footnote paragraph.',
+                :number => 1
               }
             }
           ]
@@ -200,6 +201,30 @@ Reference footnoite one.[[1]]
           { :type => :flush, :number => 2, :content => second }
         ]
       }
+    }
+
+    specify {
+      Precedent.load(
+        <<-eos
+#{first}[[1]]
+
+^1 #{second}
+        eos
+      )[:content].should == [{
+        :type => :flush,
+        :number => 1,
+        :content => [
+          first,
+          { :type => :footnote,
+            :marker => '1',
+            :content => {
+              :type => :indented,
+              :number => 1,
+              :content => second
+            }
+          }
+        ]
+      }]
     }
   end
 end

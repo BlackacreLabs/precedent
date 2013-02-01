@@ -2,8 +2,6 @@ require_relative 'parse'
 require 'active_support/core_ext/hash/slice'
 
 module Precedent
-  public
-
   # Convert a list of block-level element hashes into a hash
   # representing the structure of the document as a whole.
   #
@@ -27,19 +25,25 @@ module Precedent
   end
 
   NUMBERED_TYPES = [:indented, :flush, :raggedleft]
+
   def self.numbered(node, start=1)
     if node.is_a?(Array)
-      mapped = node.map {|n| ret, start = numbered(n, start) ; ret }
+      mapped = node.map { |n| ret, start = numbered(n, start) ; ret }
       [mapped, start]
     elsif node.is_a?(Hash) && node[:content]
+      content = node[:content]
       if NUMBERED_TYPES.include?(node[:type])
-        [node.merge(number: start), start + 1]
+        new_content, start = numbered(content, start)
+        [node.merge(number: start, content: new_content), start + 1]
       elsif node[:type] == :quote
-        new_content, start = numbered(node[:content], start)
+        new_content, start = numbered(content, start)
+        [node.merge(content: new_content), start]
+      elsif node[:type] == :footnote
+        new_content = numbered(content, 1).first
         [node.merge(content: new_content), start]
       else
-        puts node
-        [node, start]
+        new_content, start = numbered(content, start)
+        [node.merge(content: new_content), start]
       end
     else
       [node, start]
