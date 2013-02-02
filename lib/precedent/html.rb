@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 require_relative 'load'
 require 'nokogiri'
 
@@ -134,26 +136,26 @@ cite { font-style: normal; color: #777; }
         node = Nokogiri::XML::Node.new('sup', fragment)
         a = Nokogiri::XML::Node.new('a', node)
         node['class'] = 'reference'
-        marker = element[:marker]
+        marker = marker_for_href(element[:marker])
         a['id'] = "#{anchor_prefix}reference-#{marker}"
         a['href'] = "##{anchor_prefix}footnote-#{marker}"
         a.add_child(
-          Nokogiri::XML::Text.new(marker, fragment)
+          Nokogiri::XML::Text.new(element[:marker], fragment)
         )
         node.add_child(a)
       when :backref
         node = Nokogiri::XML::Node.new('sup', fragment)
         a = Nokogiri::XML::Node.new('a', node)
         node['class'] = 'reference'
-        marker = element[:marker]
+        marker = marker_for_href(element[:marker])
         a['href'] = "##{anchor_prefix}reference-#{marker}"
-        a.inner_html = marker
+        a.inner_html = element[:marker]
         node.add_child(a)
       when :footnote_content
         node = Nokogiri::XML::Node.new('aside', fragment)
-        marker = element[:marker]
+        marker = marker_for_href(element[:marker])
         node['id'] = "#{anchor_prefix}footnote-#{marker}"
-        backref = { :type => :backref, :marker => marker }
+        backref = { :type => :backref, :marker => element[:marker] }
         unless content.first[:content].is_a?(Array)
           content.first[:content] = [content.first[:content]]
         end
@@ -174,6 +176,16 @@ cite { font-style: normal; color: #777; }
       end
       node
     end
+  end
+
+  MARKER_MAPPINGS = [
+    ['††', 'two-daggers'],
+    ['†', 'dagger'],
+    ['‡', 'double-dagger'],
+    ['*', 'star']
+  ]
+  def self.marker_for_href(marker)
+    MARKER_MAPPINGS.reduce(marker) { |mem, (k,v)| mem.gsub(k, v) }
   end
 
   def self.find_footnotes(ast)
