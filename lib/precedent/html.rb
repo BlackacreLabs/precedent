@@ -2,6 +2,7 @@
 
 require_relative 'load'
 require 'nokogiri'
+require 'active_support/hash_with_indifferent_access'
 
 module Precedent
   def self.to_html(input, standalone=true)
@@ -67,11 +68,12 @@ cite { font-style: normal; color: #777; }
   end
 
   def self.render_element(fragment, element, in_footnotes, a_prefix)
+    element = HashWithIndifferentAccess.new(element) if element.is_a?(Hash)
     case element
     when Hash
       node = render_node(fragment, element, in_footnotes, a_prefix)
       content = element[:content]
-      if content && element[:type] != :footnote
+      if content && element[:type].to_sym != :footnote
         if content.is_a?(Array)
           content.each do |child|
             node.add_child(
@@ -110,11 +112,12 @@ cite { font-style: normal; color: #777; }
 
   def self.render_node(fragment, element, in_footnotes, anchor_prefix)
     content = element[:content]
+    type = element[:type].to_sym
     content = [content] unless content.is_a?(Array)
-    if mapping = SIMPLE_NODES[element[:type]]
+    if mapping = SIMPLE_NODES[type]
       simple_node(fragment, mapping)
     else
-      case element[:type]
+      case type
       when :flush
         node = Nokogiri::XML::Node.new('p', fragment)
         node['class'] = 'numbered flush'
@@ -172,7 +175,7 @@ cite { font-style: normal; color: #777; }
           Nokogiri::XML::Text.new(page.to_s, fragment)
         )
       else
-        raise "Unknown element type: #{element[:type]}"
+        raise "Unknown element type: #{element[:type].inspect}"
       end
       node
     end
