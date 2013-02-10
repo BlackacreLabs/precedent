@@ -71,9 +71,10 @@ cite { font-style: normal; color: #777; }
     element = HashWithIndifferentAccess.new(element) if element.is_a?(Hash)
     case element
     when Hash
+      type = element[:type].to_sym
       node = render_node(fragment, element, in_footnotes, a_prefix)
       content = element[:content]
-      if content && element[:type].to_sym != :footnote
+      if content && type != :footnote
         if content.is_a?(Array)
           content.each do |child|
             node.add_child(
@@ -118,6 +119,9 @@ cite { font-style: normal; color: #777; }
       simple_node(fragment, mapping)
     else
       case type
+      when :comment
+        node = Nokogiri::XML::Comment.new(fragment, content.join)
+        element.delete(:content)
       when :flush
         node = Nokogiri::XML::Node.new('p', fragment)
         node['class'] = 'numbered flush'
