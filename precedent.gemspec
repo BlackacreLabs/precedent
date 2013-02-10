@@ -28,15 +28,15 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '~>1.9'
 
   gem.add_dependency 'activesupport'
-  gem.add_dependency 'nokogiri', '~>1.5.0'
-  gem.add_dependency 'thor', '~>0.16.0'
-  gem.add_dependency 'treetop', '~>1.4.12'
-  gem.add_dependency 'xml-simple', '~>1.1.2'
+  gem.add_dependency 'nokogiri', '~>1.5'
+  gem.add_dependency 'thor', '~>0.16'
+  gem.add_dependency 'treetop', '~>1.4'
+  gem.add_dependency 'xml-simple', '~>1.1'
 
   gem.add_development_dependency 'awesome_print'
   gem.add_development_dependency 'faker'
   gem.add_development_dependency 'guard-bundler'
   gem.add_development_dependency 'guard-rspec'
   gem.add_development_dependency 'guard-treetop'
-  gem.add_development_dependency 'rspec', '~>2.12.0'
+  gem.add_development_dependency 'rspec', '~>2.12'
 end
