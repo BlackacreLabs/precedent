@@ -18,6 +18,17 @@ rule '.rb' => '.treetop' do |t|
   end
 end
 
+desc 'Profile a program run'
+task :profile do
+  require 'ruby-prof'
+  require_relative 'lib/precedent/load.rb'
+  result = RubyProf.profile do
+    Precedent.load(File.read('spec/fixtures/long_opinion.pre'))
+  end
+  printer = RubyProf::GraphPrinter.new(result)
+  printer.print(STDOUT, {})
+end
+
 desc "Detect long source code lines"
 task :lines do
   exclusions = $generated.map {|g| "grep -F -v '#{g}'" }
