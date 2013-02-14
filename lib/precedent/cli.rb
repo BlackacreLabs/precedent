@@ -20,7 +20,7 @@ module Precedent
       },
       :yaml => lambda { |hashes, pretty|
         require 'yaml'
-        STDOUT.write(hashes)
+        hashes.to_yaml
       }
     }
 
