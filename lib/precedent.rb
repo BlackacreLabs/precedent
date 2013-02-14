@@ -1,6 +1,5 @@
 require "precedent/version"
-require "precedent/load"
-require "precedent/html"
+require "precedent/parse"
 
 module Precedent
 end

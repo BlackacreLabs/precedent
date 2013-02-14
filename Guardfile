@@ -2,8 +2,9 @@ guard :bundler do
   watch("precedent.gemspec")
 end
 
+require './lib/precedent/treetop_patch.rb'
 guard :treetop do
-  watch(%r{\.treetop$})
+  watch('**/*.treetop')
 end
 
 guard :rspec, :spec_paths => ['spec'] do

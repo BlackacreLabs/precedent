@@ -1,22 +1,26 @@
 require "bundler/gem_tasks"
 
-$generated = Dir['**/*.treetop'].map {|t| t.sub('.treetop', '.rb') }
+# Treetop grammars
+
+GRAMMARS = FileList.new('**/*.treetop').sub('.treetop', '.rb')
 
 desc "Generate Treetop grammars"
-task :grammars => $generated
+task :grammars => GRAMMARS
+
+require 'rake/clean'
+CLEAN.include(GRAMMARS)
 
 compiler = nil
 rule '.rb' => '.treetop' do |t|
-  require 'treetop' unless defined? Treetop
+  unless defined? Treetop
+    require 'treetop' 
+    require './lib/precedent/treetop_patch.rb'
+  end
   compiler ||= Treetop::Compiler::GrammarCompiler.new
   compiler.compile(t.source, t.name)
-  contents = File.read(t.name)
-  # Append an encoding comment to avoid errors when using non-ASCII
-  # characters in Treetop character classes
-  File.open(t.name, 'wb') do |f|
-    f.puts("# encoding: utf-8", contents)
-  end
 end
+
+# Performance
 
 desc 'Profile a program run'
 task :profile do
@@ -29,30 +33,9 @@ task :profile do
   printer.print(STDOUT, {})
 end
 
-desc "Detect long source code lines"
-task :lines do
-  exclusions = $generated.map {|g| "grep -F -v '#{g}'" }
-  sh(<<-eos
-if git grep -nE '.{73,}' | #{exclusions.join ' | '}
-then exit 1
-else exit 0
-fi
-  eos
-  )
-end
-
-desc "Delete generated Treetop grammars"
-task :clean do
-  require 'fileutils'
-  $generated.each do |f|
-    FileUtils.rm_f(f)
-  end
-end
+# Specifications
 
 require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new(:rspec => [:grammars])
 
-desc "Generate grammars and run specs"
-RSpec::Core::RakeTask.new(:rspec)
-task :spec => [:grammars, :rspec]
-
-task :default => [:lines, :grammars, :spec]
+task :default => :rspec

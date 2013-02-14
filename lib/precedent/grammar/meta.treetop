@@ -1,3 +1,5 @@
+# encoding: UTF-8
+
 module Precedent
   # YAML-esque (but non-nestable) metadata
   grammar Meta
