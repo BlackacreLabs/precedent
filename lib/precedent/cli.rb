@@ -1,46 +1,41 @@
 require 'thor'
 
+require_relative '../precedent'
+
 module Precedent
   class CLI < Thor
-    option :indent,
-      :aliases => '-i',
+    default_task :translate
+
+    option :pretty,
+      :aliases => '-p',
       :type => :boolean,
       :default => false,
-      :desc => "Output indented JSON"
-    desc "json [FILE]", "Translate Precedent markup into JSON"
-    def json(file=STDIN)
-      input = file.is_a?(String) ? File.read(file) : file.read
-      require_relative 'load'
-      require 'json'
-      STDOUT.write(
-        if options[:indent]
-          JSON::pretty_generate(Precedent.load(input))
-        else
-          JSON::generate(Precedent.load(input))
-        end
-      )
-    end
+      :desc => "Pretty output"
 
-    desc "yaml [FILE]", "Translate Precedent markup into YAML"
-    def yaml(file=STDIN)
-      input = file.is_a?(String) ? File.read(file) : file.read
-      require_relative 'load'
-      require 'yaml'
-      STDOUT.write(Precedent.load(input).to_yaml)
-    end
+    OUTPUT_FORMATS = {
+      :json => lambda { |parsed|
+        require 'json'
+        message = options[:pretty] ? :pretty_generate : :generate
+        JSON.send(message, parsed)
+      },
+      :yaml => lambda { |parsed|
+        require 'yaml'
+        STDOUT.write(parsed)
+      }
+    }
 
-    desc "syntax [FILE]", "Check markup syntax"
-    def syntax(file=STDIN)
+    option :format,
+      :aliases => '-f',
+      :default => OUTPUT_FORMATS.keys.first,
+      :desc => "Output format: " + OUTPUT_FORMATS.keys.join('|')
+
+    desc "translate [FILE]", "Translate Precedent markup"
+
+    def translate(file=STDIN)
       input = file.is_a?(String) ? File.read(file) : file.read
-      require_relative 'load'
-      begin
-        Precedent.load(input)
-        puts "Syntax OK"
-      rescue Exception => e
-        STDERR.write options[:file] + ': ' if options[:file]
-        STDERR.puts e.to_s
-        exit 1
-      end
+      parsed = Precedent.new(input).to_hashes
+      output = OUTPUT_FORMATS[options[:format].to_sym].call(parsed)
+      STDOUT.write(output)
     end
   end
 end

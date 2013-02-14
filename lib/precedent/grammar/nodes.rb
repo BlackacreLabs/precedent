@@ -1,4 +1,4 @@
-module Precedent
+module PrecedentGrammar
   class Indented < Treetop::Runtime::SyntaxNode
   end
 

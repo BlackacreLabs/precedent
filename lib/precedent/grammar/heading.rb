@@ -25,7 +25,6 @@ module Precedent
       def build
         {
           :type => :heading,
-          # depth is the number of '#'s
           :level => hashes.text_value.length,
           :content => content.build
         }

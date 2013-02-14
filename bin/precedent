@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 
-require 'precedent/cli'
+require_relative '../lib/precedent/cli'
 Precedent::CLI.start(ARGV)

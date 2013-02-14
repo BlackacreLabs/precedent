@@ -1,10 +1,9 @@
 module Treetop
   module Runtime
     class SyntaxNode
-      # Convenience method for building ASTs.
-      #
-      # Treetop grammars can just label nodes "content", and not bother
-      # implementing the build method inline.
+      # Convenience pass-through method for building ASTs. Intersitial
+      # Treetop nodes can just label subrules their "content" and pass
+      # through during AST construction.
       def build
         if respond_to?(:content)
           content.build
