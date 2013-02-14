@@ -68,7 +68,9 @@ cite { font-style: normal; color: #777; }
   end
 
   def self.render_element(fragment, element, in_footnotes, a_prefix)
-    element = HashWithIndifferentAccess.new(element) if element.is_a?(Hash)
+    if element.is_a?(Hash) && element.keys.first.is_a?(String)
+      element = HashWithIndifferentAccess.new(element) 
+    end
     case element
     when Hash
       type = element[:type].to_sym
