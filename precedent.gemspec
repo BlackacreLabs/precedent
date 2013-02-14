@@ -25,18 +25,18 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ['lib']
 
-  gem.required_ruby_version = '~>1.9'
+  gem.required_ruby_version = '~>1.9.3'
 
-  gem.add_dependency 'activesupport'
+  gem.add_dependency 'activesupport', '~>3.2'
   gem.add_dependency 'nokogiri', '~>1.5'
   gem.add_dependency 'thor', '~>0.16'
   gem.add_dependency 'treetop', '~>1.4'
 
-  gem.add_development_dependency 'awesome_print'
   gem.add_development_dependency 'faker'
   gem.add_development_dependency 'guard-bundler'
   gem.add_development_dependency 'guard-rspec'
   gem.add_development_dependency 'guard-treetop'
   gem.add_development_dependency 'rspec', '~>2.12'
   gem.add_development_dependency 'ruby-prof'
+  gem.add_development_dependency 'simplecov'
 end

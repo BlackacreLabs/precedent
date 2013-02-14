@@ -5,11 +5,7 @@ module Treetop
       # Treetop nodes can just label subrules their "content" and pass
       # through during AST construction.
       def build
-        if respond_to?(:content)
-          content.build
-        elsif elements
-          elements.map(&:build)
-        end
+        elements.map(&:build) if elements
       end
     end
   end

@@ -1,6 +1,8 @@
+require_relative 'parser'
+
 module Precedent
   class Translator
-    @@parser = DocumentParser.new
+    @@parser = Parser.new
 
     def initialize(input)
       @input = input
@@ -14,13 +16,7 @@ module Precedent
 
     def raw_parser_output
       return @raw if @raw
-      tree = @@parser.parse(@input)
-      if tree.nil?
-        raise Exception,
-          "Parse error at offset: #{@@parser.index} " +
-          "#{@@parser.failure_reason}"
-      end
-      @raw = tree.build
+      @raw = @@parser.parse(@input)
     end
   end
 end

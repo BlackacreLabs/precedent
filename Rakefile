@@ -8,7 +8,8 @@ desc "Generate Treetop grammars"
 task :grammars => GRAMMARS
 
 require 'rake/clean'
-CLEAN.include(GRAMMARS)
+CLEAN.include('tmp')
+CLOBBER.include(GRAMMARS)
 
 compiler = nil
 rule '.rb' => '.treetop' do |t|
@@ -25,9 +26,9 @@ end
 desc 'Profile a program run'
 task :profile do
   require 'ruby-prof'
-  require_relative 'lib/precedent/load.rb'
+  require_relative 'lib/precedent.rb'
   result = RubyProf.profile do
-    Precedent.load(File.read('spec/fixtures/long_opinion.pre'))
+    Precedent.new(File.read('spec/fixtures/long_opinion.pre')).to_hashes
   end
   printer = RubyProf::GraphPrinter.new(result)
   printer.print(STDOUT, {})
@@ -36,6 +37,12 @@ end
 # Specifications
 
 require 'rspec/core/rake_task'
-RSpec::Core::RakeTask.new(:rspec => [:grammars])
+RSpec::Core::RakeTask.new(:spec => [:grammars])
 
-task :default => :rspec
+# Coverage
+desc 'Measure test suite code coverage'
+RSpec::Core::RakeTask.new(:coverage => [:grammars]) do
+  ENV['COVERAGE'] = 'true'
+end
+
+task :default => :spec

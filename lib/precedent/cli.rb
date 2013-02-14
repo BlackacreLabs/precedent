@@ -13,14 +13,14 @@ module Precedent
       :desc => "Pretty output"
 
     OUTPUT_FORMATS = {
-      :json => lambda { |parsed|
+      :json => lambda { |hashes, pretty|
         require 'json'
-        message = options[:pretty] ? :pretty_generate : :generate
-        JSON.send(message, parsed)
+        message = pretty ? :pretty_generate : :generate
+        JSON.send(message, hashes)
       },
-      :yaml => lambda { |parsed|
+      :yaml => lambda { |hashes, pretty|
         require 'yaml'
-        STDOUT.write(parsed)
+        STDOUT.write(hashes)
       }
     }
 
@@ -34,7 +34,7 @@ module Precedent
     def translate(file=STDIN)
       input = file.is_a?(String) ? File.read(file) : file.read
       parsed = Precedent.new(input).to_hashes
-      output = OUTPUT_FORMATS[options[:format].to_sym].call(parsed)
+      output = OUTPUT_FORMATS[options[:format].to_sym].call(parsed, options[:pretty])
       STDOUT.write(output)
     end
   end
