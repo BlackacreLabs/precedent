@@ -304,4 +304,19 @@ describe Precedent do
       }
     ]
   end
+
+
+  specify {
+    input = <<-eos
+\\\\Held:\\\\
+
+This and that
+    eos
+    Precedent.new(input).to_hashes[:body].should == [
+      { :type => :flush,
+        :content => 
+          { :type => :emphasis, :content => 'Held:' } },
+      { :type => :flush, :content => 'This and that' } ]
+  }
 end
+

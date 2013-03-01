@@ -27,7 +27,7 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'activesupport', '~>3.2'
   gem.add_dependency 'nokogiri', '~>1.5'
-  gem.add_dependency 'thor', '~>0.16'
+  gem.add_dependency 'thor', '~>0.15'
   gem.add_dependency 'treetop', '~>1.4'
 
   gem.add_development_dependency 'faker'
