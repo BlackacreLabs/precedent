@@ -51,6 +51,7 @@ module Precedent
     HEADING = /^(#+)\s+(.+)$/
     INDENTED = /^  (.+)$/
     INDENTED_QUOTE = /^      (.+)$/
+    IMAGE_TAG = /^\[\[IMAGE: (\w+)\]\]$/
     METADATA = /^([A-Z][[:ascii:]]*): (.+)$/
     RAGGED_LEFT = /^        (.+)$/
     RULE_BODY = /^\* \* \*\s*$/
@@ -86,6 +87,8 @@ module Precedent
 
     def start_block(blocks, line)
       case line
+      when IMAGE_TAG
+        blocks << build_block(:image).merge(file: $1)
       when RULE_QUOTE
         blocks << build_block(:rule_quote)
       when RULE_BODY

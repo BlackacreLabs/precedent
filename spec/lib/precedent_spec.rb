@@ -31,6 +31,15 @@ describe Precedent do
     ]
   end
 
+  it 'recognizes image tags' do
+    Precedent.new(
+      "#{first}\n\n[[IMAGE: something]]"
+    ).to_hashes[:body].should == [
+      { :type => :flush, :content => first },
+      { :type => :image, :file => 'something' }
+    ]
+  end
+
   it 'recognizes flush and indented quote paragraphs' do 
     Precedent.new(
       "    #{first}\n\n      #{second}"
