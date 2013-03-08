@@ -156,21 +156,18 @@ describe Precedent do
       '*', "\u2020\u2020", "\u2020", "\u2021"
     ].each do |marker|
       returned = Precedent.new(<<-eos
-#{first}
+^#{marker} #{first}
 
-^#{marker} #{second}
+^   #{second}
 
 ^ #{third}
       eos
       ).to_hashes
-      returned[:body].should == [
-        { :type => :flush, :content => first }
-      ]
+      returned[:body].should == []
       returned[:footnotes].should == [
-        { :type => :footnote,
-          :marker => marker,
-          :content => second },
-        { :type => :footnote, :content => third }
+        { :type => :footnote, :marker => marker, :content => first },
+        { :type => :indented_footnote, :content => second },
+        { :type => :flush_footnote, :content => third }
       ]
     end
   end

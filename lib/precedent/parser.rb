@@ -24,7 +24,7 @@ module Precedent
         end
 
         type = block[:type]
-        if type == :footnote
+        if [:footnote, :indented_footnote, :flush_footnote].include?(type)
           mem[:footnotes] << block
         else
           mem[:body] << block
@@ -46,8 +46,9 @@ module Precedent
     COMMENT_LINE = /^%/
     FLUSH_LINE = /^([^ ].+)$/
     FLUSH_QUOTE = /^    (.+)$/
-    FOOTNOTE_CONTINUE = /^\^\s+(.+)$/
-    FOOTNOTE_START = /^\^([^ ]+)\s+(.+)$/
+    INDENTED_FOOTNOTE = /^\^\s{3,}([^\s].+)$/
+    FLUSH_FOOTNOTE = /^\^\s([^\s].+)$/
+    START_FOOTNOTE = /^\^([^\s]+)\s+([^\s].+)$/
     HEADING = /^(#+)\s+(.+)$/
     INDENTED = /^  (.+)$/
     INDENTED_QUOTE = /^      (.+)$/
@@ -95,10 +96,12 @@ module Precedent
         blocks << build_block(:rule)
       when HEADING
         blocks << build_block(:heading, $2).merge(level: $1.length)
-      when FOOTNOTE_START
+      when START_FOOTNOTE
         blocks << build_block(:footnote, $2).merge(marker: $1)
-      when FOOTNOTE_CONTINUE
-        blocks << build_block(:footnote, $1)
+      when FLUSH_FOOTNOTE
+        blocks << build_block(:flush_footnote, $1)
+      when INDENTED_FOOTNOTE
+        blocks << build_block(:indented_footnote, $1)
       when RAGGED_LEFT
         blocks << build_block(:ragged_left, $1)
       when INDENTED_QUOTE
