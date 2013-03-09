@@ -324,5 +324,36 @@ This and that
           { :type => :emphasis, :content => 'Held:' } },
       { :type => :flush, :content => 'This and that' } ]
   }
-end
 
+  context 'searchable' do 
+    specify {
+      input = <<-eos
+# Test Heading
+
+This is \<\<some\>\> text.
+
+* * *
+
+This is \\\\some\\\\ text. {{A citation \\\\follows\\\\ with its own formatting.}}
+      eos
+      Precedent.new(input).to_indexable_record.should == {
+        :text => "Test Heading\n\nThis is some text.\n\n\n\nThis is some text. A citation follows with its own formatting.",
+        :blocks => [
+          [ :heading, {:level => 1} ],
+          :flush,
+          :rule,
+          :flush
+        ],
+        :formatting => [
+          nil,
+          { :smallcaps => [ [8, 12] ] },
+          nil,
+          {
+            :emphasis => [ [8, 12], [30, 37] ],
+            :citation => [ [19, 62] ]
+          }
+        ]
+      }
+    }
+  end
+end
