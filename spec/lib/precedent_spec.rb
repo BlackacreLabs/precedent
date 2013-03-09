@@ -158,7 +158,7 @@ describe Precedent do
       returned = Precedent.new(<<-eos
 ^#{marker} #{first}
 
-^   #{second}
+  ^ #{second}
 
 ^ #{third}
       eos

@@ -46,7 +46,7 @@ module Precedent
     COMMENT_LINE = /^%/
     FLUSH_LINE = /^([^ ].+)$/
     FLUSH_QUOTE = /^    (.+)$/
-    INDENTED_FOOTNOTE = /^\^\s{3,}([^\s].+)$/
+    INDENTED_FOOTNOTE = /^  \^\s([^\s].+)$/
     FLUSH_FOOTNOTE = /^\^\s([^\s].+)$/
     START_FOOTNOTE = /^\^([^\s]+)\s+([^\s].+)$/
     HEADING = /^(#+)\s+(.+)$/
