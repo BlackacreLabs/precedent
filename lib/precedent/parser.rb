@@ -20,6 +20,9 @@ module Precedent
         content = block[:content]
         if content
           ast = @@inline_parser.parse(content.join(' ').gsub(/ +/, ' '))
+          if ast.nil?
+            puts content
+          end
           block.merge!(content: ast.build)
         end
 
