@@ -55,9 +55,10 @@ module Precedent
     HEADING = /^(#+)\s+(.+)$/
     INDENTED = /^  (.+)$/
     INDENTED_QUOTE = /^      (.+)$/
-    IMAGE_TAG = /^\[\[IMAGE: (\w+)\]\]$/
+    IMAGE_TAG = /^\[\[IMAGE: ([0-9a-zA-Z\-_]+)\]\]$/
     METADATA = /^([A-Z][[:ascii:]]*): (.+)$/
-    RAGGED_LEFT = /^        (.+)$/
+    CENTERED = /^        (.+)$/
+    RAGGED_LEFT = /^          (.+)$/
     RULE_BODY = /^\* \* \*\s*$/
     RULE_QUOTE = /^    \* \* \*\s*$/
 
@@ -107,6 +108,8 @@ module Precedent
         blocks << build_block(:indented_footnote, $1)
       when RAGGED_LEFT
         blocks << build_block(:ragged_left, $1)
+      when CENTERED
+        blocks << build_block(:centered, $1)
       when INDENTED_QUOTE
         blocks << build_block(:indented_quote, $1)
       when FLUSH_QUOTE

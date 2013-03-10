@@ -22,9 +22,18 @@ describe Precedent do
     ]
   end
 
-  it 'recognizes ragged left paragraphs' do 
+  it 'recognizes centered paragraphs' do 
     Precedent.new(
       "#{first}\n\n        #{second}"
+    ).to_hashes[:body].should == [
+      { :type => :flush, :content => first },
+      { :type => :centered, :content => second }
+    ]
+  end
+
+  it 'recognizes ragged left paragraphs' do 
+    Precedent.new(
+      "#{first}\n\n          #{second}"
     ).to_hashes[:body].should == [
       { :type => :flush, :content => first },
       { :type => :ragged_left, :content => second }
