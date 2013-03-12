@@ -364,5 +364,15 @@ This is \\\\some\\\\ text. {{A citation \\\\follows\\\\ with its own formatting.
         ]
       }
     }
+
+    specify {
+      Precedent.new('Page@@113@@ Break').to_indexable_record.should == {
+        :text => "Page Break",
+        :blocks => [:flush],
+        :formatting => [
+          { :breaks => { 4 => 113 }  },
+        ]
+      }
+    }
   end
 end

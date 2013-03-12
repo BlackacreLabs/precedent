@@ -47,6 +47,10 @@ module Precedent
           else
             inline_offsets(object[:content], inlines)
           end
+        elsif object[:type] == :break
+          inlines[:breaks] ||= {}
+          inlines[:breaks][inlines[:offset]] = object[:page]
+          inlines
         else
           inlines
         end
